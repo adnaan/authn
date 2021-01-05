@@ -47,7 +47,7 @@ func (Account) Fields() []ent.Field {
 		field.Time("email_change_sent_at").Nillable().Optional(),
 		field.String("email_change_token").NotEmpty().Optional().Nillable().Unique(),
 
-		field.JSON("metadata", map[string]interface{}{}),
+		field.JSON("attributes", map[string]interface{}{}),
 		field.Strings("roles").Optional(),
 		field.JSON("teams", map[string]string{}).Optional(),
 

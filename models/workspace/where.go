@@ -476,17 +476,17 @@ func DescriptionContainsFold(v string) predicate.Workspace {
 	})
 }
 
-// MetadataIsNil applies the IsNil predicate on the "metadata" field.
-func MetadataIsNil() predicate.Workspace {
+// AttributesIsNil applies the IsNil predicate on the "attributes" field.
+func AttributesIsNil() predicate.Workspace {
 	return predicate.Workspace(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldMetadata)))
+		s.Where(sql.IsNull(s.C(FieldAttributes)))
 	})
 }
 
-// MetadataNotNil applies the NotNil predicate on the "metadata" field.
-func MetadataNotNil() predicate.Workspace {
+// AttributesNotNil applies the NotNil predicate on the "attributes" field.
+func AttributesNotNil() predicate.Workspace {
 	return predicate.Workspace(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldMetadata)))
+		s.Where(sql.NotNull(s.C(FieldAttributes)))
 	})
 }
 

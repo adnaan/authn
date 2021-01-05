@@ -50,9 +50,9 @@ func (wc *WorkspaceCreate) SetNillableDescription(s *string) *WorkspaceCreate {
 	return wc
 }
 
-// SetMetadata sets the metadata field.
-func (wc *WorkspaceCreate) SetMetadata(m map[string]interface{}) *WorkspaceCreate {
-	wc.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (wc *WorkspaceCreate) SetAttributes(m map[string]interface{}) *WorkspaceCreate {
+	wc.mutation.SetAttributes(m)
 	return wc
 }
 
@@ -282,13 +282,13 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 		})
 		_node.Description = value
 	}
-	if value, ok := wc.mutation.Metadata(); ok {
+	if value, ok := wc.mutation.Attributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: workspace.FieldMetadata,
+			Column: workspace.FieldAttributes,
 		})
-		_node.Metadata = value
+		_node.Attributes = value
 	}
 	if value, ok := wc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

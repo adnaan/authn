@@ -23,8 +23,8 @@ type Group struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
-	// Metadata holds the value of the "metadata" field.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	// Attributes holds the value of the "attributes" field.
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -75,7 +75,7 @@ func (*Group) scanValues() []interface{} {
 		&uuid.UUID{},      // id
 		&sql.NullString{}, // name
 		&sql.NullString{}, // description
-		&[]byte{},         // metadata
+		&[]byte{},         // attributes
 		&sql.NullTime{},   // created_at
 		&sql.NullTime{},   // updated_at
 	}
@@ -112,10 +112,10 @@ func (gr *Group) assignValues(values ...interface{}) error {
 	}
 
 	if value, ok := values[2].(*[]byte); !ok {
-		return fmt.Errorf("unexpected type %T for field metadata", values[2])
+		return fmt.Errorf("unexpected type %T for field attributes", values[2])
 	} else if value != nil && len(*value) > 0 {
-		if err := json.Unmarshal(*value, &gr.Metadata); err != nil {
-			return fmt.Errorf("unmarshal field metadata: %v", err)
+		if err := json.Unmarshal(*value, &gr.Attributes); err != nil {
+			return fmt.Errorf("unmarshal field attributes: %v", err)
 		}
 	}
 	if value, ok := values[3].(*sql.NullTime); !ok {
@@ -176,8 +176,8 @@ func (gr *Group) String() string {
 	builder.WriteString(gr.Name)
 	builder.WriteString(", description=")
 	builder.WriteString(gr.Description)
-	builder.WriteString(", metadata=")
-	builder.WriteString(fmt.Sprintf("%v", gr.Metadata))
+	builder.WriteString(", attributes=")
+	builder.WriteString(fmt.Sprintf("%v", gr.Attributes))
 	builder.WriteString(", created_at=")
 	builder.WriteString(gr.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -49,15 +49,15 @@ func (gru *GroupRoleUpdate) SetAccountID(u uuid.UUID) *GroupRoleUpdate {
 	return gru
 }
 
-// SetMetadata sets the metadata field.
-func (gru *GroupRoleUpdate) SetMetadata(m map[string]interface{}) *GroupRoleUpdate {
-	gru.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (gru *GroupRoleUpdate) SetAttributes(m map[string]interface{}) *GroupRoleUpdate {
+	gru.mutation.SetAttributes(m)
 	return gru
 }
 
-// ClearMetadata clears the value of metadata.
-func (gru *GroupRoleUpdate) ClearMetadata() *GroupRoleUpdate {
-	gru.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (gru *GroupRoleUpdate) ClearAttributes() *GroupRoleUpdate {
+	gru.mutation.ClearAttributes()
 	return gru
 }
 
@@ -227,17 +227,17 @@ func (gru *GroupRoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: grouprole.FieldAccountID,
 		})
 	}
-	if value, ok := gru.mutation.Metadata(); ok {
+	if value, ok := gru.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: grouprole.FieldMetadata,
+			Column: grouprole.FieldAttributes,
 		})
 	}
-	if gru.mutation.MetadataCleared() {
+	if gru.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: grouprole.FieldMetadata,
+			Column: grouprole.FieldAttributes,
 		})
 	}
 	if value, ok := gru.mutation.UpdatedAt(); ok {
@@ -353,15 +353,15 @@ func (gruo *GroupRoleUpdateOne) SetAccountID(u uuid.UUID) *GroupRoleUpdateOne {
 	return gruo
 }
 
-// SetMetadata sets the metadata field.
-func (gruo *GroupRoleUpdateOne) SetMetadata(m map[string]interface{}) *GroupRoleUpdateOne {
-	gruo.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (gruo *GroupRoleUpdateOne) SetAttributes(m map[string]interface{}) *GroupRoleUpdateOne {
+	gruo.mutation.SetAttributes(m)
 	return gruo
 }
 
-// ClearMetadata clears the value of metadata.
-func (gruo *GroupRoleUpdateOne) ClearMetadata() *GroupRoleUpdateOne {
-	gruo.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (gruo *GroupRoleUpdateOne) ClearAttributes() *GroupRoleUpdateOne {
+	gruo.mutation.ClearAttributes()
 	return gruo
 }
 
@@ -529,17 +529,17 @@ func (gruo *GroupRoleUpdateOne) sqlSave(ctx context.Context) (_node *GroupRole, 
 			Column: grouprole.FieldAccountID,
 		})
 	}
-	if value, ok := gruo.mutation.Metadata(); ok {
+	if value, ok := gruo.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: grouprole.FieldMetadata,
+			Column: grouprole.FieldAttributes,
 		})
 	}
-	if gruo.mutation.MetadataCleared() {
+	if gruo.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: grouprole.FieldMetadata,
+			Column: grouprole.FieldAttributes,
 		})
 	}
 	if value, ok := gruo.mutation.UpdatedAt(); ok {

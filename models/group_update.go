@@ -57,15 +57,15 @@ func (gu *GroupUpdate) ClearDescription() *GroupUpdate {
 	return gu
 }
 
-// SetMetadata sets the metadata field.
-func (gu *GroupUpdate) SetMetadata(m map[string]interface{}) *GroupUpdate {
-	gu.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (gu *GroupUpdate) SetAttributes(m map[string]interface{}) *GroupUpdate {
+	gu.mutation.SetAttributes(m)
 	return gu
 }
 
-// ClearMetadata clears the value of metadata.
-func (gu *GroupUpdate) ClearMetadata() *GroupUpdate {
-	gu.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (gu *GroupUpdate) ClearAttributes() *GroupUpdate {
+	gu.mutation.ClearAttributes()
 	return gu
 }
 
@@ -255,17 +255,17 @@ func (gu *GroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: group.FieldDescription,
 		})
 	}
-	if value, ok := gu.mutation.Metadata(); ok {
+	if value, ok := gu.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: group.FieldMetadata,
+			Column: group.FieldAttributes,
 		})
 	}
-	if gu.mutation.MetadataCleared() {
+	if gu.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: group.FieldMetadata,
+			Column: group.FieldAttributes,
 		})
 	}
 	if value, ok := gu.mutation.UpdatedAt(); ok {
@@ -408,15 +408,15 @@ func (guo *GroupUpdateOne) ClearDescription() *GroupUpdateOne {
 	return guo
 }
 
-// SetMetadata sets the metadata field.
-func (guo *GroupUpdateOne) SetMetadata(m map[string]interface{}) *GroupUpdateOne {
-	guo.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (guo *GroupUpdateOne) SetAttributes(m map[string]interface{}) *GroupUpdateOne {
+	guo.mutation.SetAttributes(m)
 	return guo
 }
 
-// ClearMetadata clears the value of metadata.
-func (guo *GroupUpdateOne) ClearMetadata() *GroupUpdateOne {
-	guo.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (guo *GroupUpdateOne) ClearAttributes() *GroupUpdateOne {
+	guo.mutation.ClearAttributes()
 	return guo
 }
 
@@ -604,17 +604,17 @@ func (guo *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error
 			Column: group.FieldDescription,
 		})
 	}
-	if value, ok := guo.mutation.Metadata(); ok {
+	if value, ok := guo.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: group.FieldMetadata,
+			Column: group.FieldAttributes,
 		})
 	}
-	if guo.mutation.MetadataCleared() {
+	if guo.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: group.FieldMetadata,
+			Column: group.FieldAttributes,
 		})
 	}
 	if value, ok := guo.mutation.UpdatedAt(); ok {

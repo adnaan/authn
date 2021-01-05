@@ -49,8 +49,8 @@ type Account struct {
 	EmailChangeSentAt *time.Time `json:"email_change_sent_at,omitempty"`
 	// EmailChangeToken holds the value of the "email_change_token" field.
 	EmailChangeToken *string `json:"email_change_token,omitempty"`
-	// Metadata holds the value of the "metadata" field.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	// Attributes holds the value of the "attributes" field.
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
 	// Roles holds the value of the "roles" field.
 	Roles []string `json:"roles,omitempty"`
 	// Teams holds the value of the "teams" field.
@@ -141,7 +141,7 @@ func (*Account) scanValues() []interface{} {
 		&sql.NullString{}, // email_change
 		&sql.NullTime{},   // email_change_sent_at
 		&sql.NullString{}, // email_change_token
-		&[]byte{},         // metadata
+		&[]byte{},         // attributes
 		&[]byte{},         // roles
 		&[]byte{},         // teams
 		&sql.NullTime{},   // created_at
@@ -247,10 +247,10 @@ func (a *Account) assignValues(values ...interface{}) error {
 	}
 
 	if value, ok := values[15].(*[]byte); !ok {
-		return fmt.Errorf("unexpected type %T for field metadata", values[15])
+		return fmt.Errorf("unexpected type %T for field attributes", values[15])
 	} else if value != nil && len(*value) > 0 {
-		if err := json.Unmarshal(*value, &a.Metadata); err != nil {
-			return fmt.Errorf("unmarshal field metadata: %v", err)
+		if err := json.Unmarshal(*value, &a.Attributes); err != nil {
+			return fmt.Errorf("unmarshal field attributes: %v", err)
 		}
 	}
 
@@ -375,8 +375,8 @@ func (a *Account) String() string {
 		builder.WriteString(", email_change_token=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", metadata=")
-	builder.WriteString(fmt.Sprintf("%v", a.Metadata))
+	builder.WriteString(", attributes=")
+	builder.WriteString(fmt.Sprintf("%v", a.Attributes))
 	builder.WriteString(", roles=")
 	builder.WriteString(fmt.Sprintf("%v", a.Roles))
 	builder.WriteString(", teams=")

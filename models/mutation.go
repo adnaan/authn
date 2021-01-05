@@ -65,7 +65,7 @@ type AccountMutation struct {
 	email_change           *string
 	email_change_sent_at   *time.Time
 	email_change_token     *string
-	metadata               *map[string]interface{}
+	attributes             *map[string]interface{}
 	roles                  *[]string
 	teams                  *map[string]string
 	created_at             *time.Time
@@ -884,41 +884,41 @@ func (m *AccountMutation) ResetEmailChangeToken() {
 	delete(m.clearedFields, account.FieldEmailChangeToken)
 }
 
-// SetMetadata sets the metadata field.
-func (m *AccountMutation) SetMetadata(value map[string]interface{}) {
-	m.metadata = &value
+// SetAttributes sets the attributes field.
+func (m *AccountMutation) SetAttributes(value map[string]interface{}) {
+	m.attributes = &value
 }
 
-// Metadata returns the metadata value in the mutation.
-func (m *AccountMutation) Metadata() (r map[string]interface{}, exists bool) {
-	v := m.metadata
+// Attributes returns the attributes value in the mutation.
+func (m *AccountMutation) Attributes() (r map[string]interface{}, exists bool) {
+	v := m.attributes
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMetadata returns the old metadata value of the Account.
+// OldAttributes returns the old attributes value of the Account.
 // If the Account object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *AccountMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *AccountMutation) OldAttributes(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMetadata is allowed only on UpdateOne operations")
+		return v, fmt.Errorf("OldAttributes is allowed only on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMetadata requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAttributes requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+		return v, fmt.Errorf("querying old value for OldAttributes: %w", err)
 	}
-	return oldValue.Metadata, nil
+	return oldValue.Attributes, nil
 }
 
-// ResetMetadata reset all changes of the "metadata" field.
-func (m *AccountMutation) ResetMetadata() {
-	m.metadata = nil
+// ResetAttributes reset all changes of the "attributes" field.
+func (m *AccountMutation) ResetAttributes() {
+	m.attributes = nil
 }
 
 // SetRoles sets the roles field.
@@ -1403,8 +1403,8 @@ func (m *AccountMutation) Fields() []string {
 	if m.email_change_token != nil {
 		fields = append(fields, account.FieldEmailChangeToken)
 	}
-	if m.metadata != nil {
-		fields = append(fields, account.FieldMetadata)
+	if m.attributes != nil {
+		fields = append(fields, account.FieldAttributes)
 	}
 	if m.roles != nil {
 		fields = append(fields, account.FieldRoles)
@@ -1459,8 +1459,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.EmailChangeSentAt()
 	case account.FieldEmailChangeToken:
 		return m.EmailChangeToken()
-	case account.FieldMetadata:
-		return m.Metadata()
+	case account.FieldAttributes:
+		return m.Attributes()
 	case account.FieldRoles:
 		return m.Roles()
 	case account.FieldTeams:
@@ -1510,8 +1510,8 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldEmailChangeSentAt(ctx)
 	case account.FieldEmailChangeToken:
 		return m.OldEmailChangeToken(ctx)
-	case account.FieldMetadata:
-		return m.OldMetadata(ctx)
+	case account.FieldAttributes:
+		return m.OldAttributes(ctx)
 	case account.FieldRoles:
 		return m.OldRoles(ctx)
 	case account.FieldTeams:
@@ -1636,12 +1636,12 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEmailChangeToken(v)
 		return nil
-	case account.FieldMetadata:
+	case account.FieldAttributes:
 		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMetadata(v)
+		m.SetAttributes(v)
 		return nil
 	case account.FieldRoles:
 		v, ok := value.([]string)
@@ -1866,8 +1866,8 @@ func (m *AccountMutation) ResetField(name string) error {
 	case account.FieldEmailChangeToken:
 		m.ResetEmailChangeToken()
 		return nil
-	case account.FieldMetadata:
-		m.ResetMetadata()
+	case account.FieldAttributes:
+		m.ResetAttributes()
 		return nil
 	case account.FieldRoles:
 		m.ResetRoles()
@@ -2055,7 +2055,7 @@ type AccountRoleMutation struct {
 	id              *uuid.UUID
 	name            *string
 	account_id      *uuid.UUID
-	metadata        *map[string]interface{}
+	attributes      *map[string]interface{}
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
@@ -2225,54 +2225,54 @@ func (m *AccountRoleMutation) ResetAccountID() {
 	m.account_id = nil
 }
 
-// SetMetadata sets the metadata field.
-func (m *AccountRoleMutation) SetMetadata(value map[string]interface{}) {
-	m.metadata = &value
+// SetAttributes sets the attributes field.
+func (m *AccountRoleMutation) SetAttributes(value map[string]interface{}) {
+	m.attributes = &value
 }
 
-// Metadata returns the metadata value in the mutation.
-func (m *AccountRoleMutation) Metadata() (r map[string]interface{}, exists bool) {
-	v := m.metadata
+// Attributes returns the attributes value in the mutation.
+func (m *AccountRoleMutation) Attributes() (r map[string]interface{}, exists bool) {
+	v := m.attributes
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMetadata returns the old metadata value of the AccountRole.
+// OldAttributes returns the old attributes value of the AccountRole.
 // If the AccountRole object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *AccountRoleMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *AccountRoleMutation) OldAttributes(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMetadata is allowed only on UpdateOne operations")
+		return v, fmt.Errorf("OldAttributes is allowed only on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMetadata requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAttributes requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+		return v, fmt.Errorf("querying old value for OldAttributes: %w", err)
 	}
-	return oldValue.Metadata, nil
+	return oldValue.Attributes, nil
 }
 
-// ClearMetadata clears the value of metadata.
-func (m *AccountRoleMutation) ClearMetadata() {
-	m.metadata = nil
-	m.clearedFields[accountrole.FieldMetadata] = struct{}{}
+// ClearAttributes clears the value of attributes.
+func (m *AccountRoleMutation) ClearAttributes() {
+	m.attributes = nil
+	m.clearedFields[accountrole.FieldAttributes] = struct{}{}
 }
 
-// MetadataCleared returns if the field metadata was cleared in this mutation.
-func (m *AccountRoleMutation) MetadataCleared() bool {
-	_, ok := m.clearedFields[accountrole.FieldMetadata]
+// AttributesCleared returns if the field attributes was cleared in this mutation.
+func (m *AccountRoleMutation) AttributesCleared() bool {
+	_, ok := m.clearedFields[accountrole.FieldAttributes]
 	return ok
 }
 
-// ResetMetadata reset all changes of the "metadata" field.
-func (m *AccountRoleMutation) ResetMetadata() {
-	m.metadata = nil
-	delete(m.clearedFields, accountrole.FieldMetadata)
+// ResetAttributes reset all changes of the "attributes" field.
+func (m *AccountRoleMutation) ResetAttributes() {
+	m.attributes = nil
+	delete(m.clearedFields, accountrole.FieldAttributes)
 }
 
 // SetCreatedAt sets the created_at field.
@@ -2409,8 +2409,8 @@ func (m *AccountRoleMutation) Fields() []string {
 	if m.account_id != nil {
 		fields = append(fields, accountrole.FieldAccountID)
 	}
-	if m.metadata != nil {
-		fields = append(fields, accountrole.FieldMetadata)
+	if m.attributes != nil {
+		fields = append(fields, accountrole.FieldAttributes)
 	}
 	if m.created_at != nil {
 		fields = append(fields, accountrole.FieldCreatedAt)
@@ -2430,8 +2430,8 @@ func (m *AccountRoleMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case accountrole.FieldAccountID:
 		return m.AccountID()
-	case accountrole.FieldMetadata:
-		return m.Metadata()
+	case accountrole.FieldAttributes:
+		return m.Attributes()
 	case accountrole.FieldCreatedAt:
 		return m.CreatedAt()
 	case accountrole.FieldUpdatedAt:
@@ -2449,8 +2449,8 @@ func (m *AccountRoleMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldName(ctx)
 	case accountrole.FieldAccountID:
 		return m.OldAccountID(ctx)
-	case accountrole.FieldMetadata:
-		return m.OldMetadata(ctx)
+	case accountrole.FieldAttributes:
+		return m.OldAttributes(ctx)
 	case accountrole.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case accountrole.FieldUpdatedAt:
@@ -2478,12 +2478,12 @@ func (m *AccountRoleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAccountID(v)
 		return nil
-	case accountrole.FieldMetadata:
+	case accountrole.FieldAttributes:
 		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMetadata(v)
+		m.SetAttributes(v)
 		return nil
 	case accountrole.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -2529,8 +2529,8 @@ func (m *AccountRoleMutation) AddField(name string, value ent.Value) error {
 // during this mutation.
 func (m *AccountRoleMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(accountrole.FieldMetadata) {
-		fields = append(fields, accountrole.FieldMetadata)
+	if m.FieldCleared(accountrole.FieldAttributes) {
+		fields = append(fields, accountrole.FieldAttributes)
 	}
 	return fields
 }
@@ -2546,8 +2546,8 @@ func (m *AccountRoleMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *AccountRoleMutation) ClearField(name string) error {
 	switch name {
-	case accountrole.FieldMetadata:
-		m.ClearMetadata()
+	case accountrole.FieldAttributes:
+		m.ClearAttributes()
 		return nil
 	}
 	return fmt.Errorf("unknown AccountRole nullable field %s", name)
@@ -2564,8 +2564,8 @@ func (m *AccountRoleMutation) ResetField(name string) error {
 	case accountrole.FieldAccountID:
 		m.ResetAccountID()
 		return nil
-	case accountrole.FieldMetadata:
-		m.ResetMetadata()
+	case accountrole.FieldAttributes:
+		m.ResetAttributes()
 		return nil
 	case accountrole.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -2666,7 +2666,7 @@ type GroupMutation struct {
 	id                 *uuid.UUID
 	name               *string
 	description        *string
-	metadata           *map[string]interface{}
+	attributes         *map[string]interface{}
 	created_at         *time.Time
 	updated_at         *time.Time
 	clearedFields      map[string]struct{}
@@ -2852,54 +2852,54 @@ func (m *GroupMutation) ResetDescription() {
 	delete(m.clearedFields, group.FieldDescription)
 }
 
-// SetMetadata sets the metadata field.
-func (m *GroupMutation) SetMetadata(value map[string]interface{}) {
-	m.metadata = &value
+// SetAttributes sets the attributes field.
+func (m *GroupMutation) SetAttributes(value map[string]interface{}) {
+	m.attributes = &value
 }
 
-// Metadata returns the metadata value in the mutation.
-func (m *GroupMutation) Metadata() (r map[string]interface{}, exists bool) {
-	v := m.metadata
+// Attributes returns the attributes value in the mutation.
+func (m *GroupMutation) Attributes() (r map[string]interface{}, exists bool) {
+	v := m.attributes
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMetadata returns the old metadata value of the Group.
+// OldAttributes returns the old attributes value of the Group.
 // If the Group object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *GroupMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *GroupMutation) OldAttributes(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMetadata is allowed only on UpdateOne operations")
+		return v, fmt.Errorf("OldAttributes is allowed only on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMetadata requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAttributes requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+		return v, fmt.Errorf("querying old value for OldAttributes: %w", err)
 	}
-	return oldValue.Metadata, nil
+	return oldValue.Attributes, nil
 }
 
-// ClearMetadata clears the value of metadata.
-func (m *GroupMutation) ClearMetadata() {
-	m.metadata = nil
-	m.clearedFields[group.FieldMetadata] = struct{}{}
+// ClearAttributes clears the value of attributes.
+func (m *GroupMutation) ClearAttributes() {
+	m.attributes = nil
+	m.clearedFields[group.FieldAttributes] = struct{}{}
 }
 
-// MetadataCleared returns if the field metadata was cleared in this mutation.
-func (m *GroupMutation) MetadataCleared() bool {
-	_, ok := m.clearedFields[group.FieldMetadata]
+// AttributesCleared returns if the field attributes was cleared in this mutation.
+func (m *GroupMutation) AttributesCleared() bool {
+	_, ok := m.clearedFields[group.FieldAttributes]
 	return ok
 }
 
-// ResetMetadata reset all changes of the "metadata" field.
-func (m *GroupMutation) ResetMetadata() {
-	m.metadata = nil
-	delete(m.clearedFields, group.FieldMetadata)
+// ResetAttributes reset all changes of the "attributes" field.
+func (m *GroupMutation) ResetAttributes() {
+	m.attributes = nil
+	delete(m.clearedFields, group.FieldAttributes)
 }
 
 // SetCreatedAt sets the created_at field.
@@ -3089,8 +3089,8 @@ func (m *GroupMutation) Fields() []string {
 	if m.description != nil {
 		fields = append(fields, group.FieldDescription)
 	}
-	if m.metadata != nil {
-		fields = append(fields, group.FieldMetadata)
+	if m.attributes != nil {
+		fields = append(fields, group.FieldAttributes)
 	}
 	if m.created_at != nil {
 		fields = append(fields, group.FieldCreatedAt)
@@ -3110,8 +3110,8 @@ func (m *GroupMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case group.FieldDescription:
 		return m.Description()
-	case group.FieldMetadata:
-		return m.Metadata()
+	case group.FieldAttributes:
+		return m.Attributes()
 	case group.FieldCreatedAt:
 		return m.CreatedAt()
 	case group.FieldUpdatedAt:
@@ -3129,8 +3129,8 @@ func (m *GroupMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldName(ctx)
 	case group.FieldDescription:
 		return m.OldDescription(ctx)
-	case group.FieldMetadata:
-		return m.OldMetadata(ctx)
+	case group.FieldAttributes:
+		return m.OldAttributes(ctx)
 	case group.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case group.FieldUpdatedAt:
@@ -3158,12 +3158,12 @@ func (m *GroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
-	case group.FieldMetadata:
+	case group.FieldAttributes:
 		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMetadata(v)
+		m.SetAttributes(v)
 		return nil
 	case group.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3212,8 +3212,8 @@ func (m *GroupMutation) ClearedFields() []string {
 	if m.FieldCleared(group.FieldDescription) {
 		fields = append(fields, group.FieldDescription)
 	}
-	if m.FieldCleared(group.FieldMetadata) {
-		fields = append(fields, group.FieldMetadata)
+	if m.FieldCleared(group.FieldAttributes) {
+		fields = append(fields, group.FieldAttributes)
 	}
 	return fields
 }
@@ -3232,8 +3232,8 @@ func (m *GroupMutation) ClearField(name string) error {
 	case group.FieldDescription:
 		m.ClearDescription()
 		return nil
-	case group.FieldMetadata:
-		m.ClearMetadata()
+	case group.FieldAttributes:
+		m.ClearAttributes()
 		return nil
 	}
 	return fmt.Errorf("unknown Group nullable field %s", name)
@@ -3250,8 +3250,8 @@ func (m *GroupMutation) ResetField(name string) error {
 	case group.FieldDescription:
 		m.ResetDescription()
 		return nil
-	case group.FieldMetadata:
-		m.ResetMetadata()
+	case group.FieldAttributes:
+		m.ResetAttributes()
 		return nil
 	case group.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -3379,7 +3379,7 @@ type GroupRoleMutation struct {
 	name            *string
 	group_id        *uuid.UUID
 	account_id      *uuid.UUID
-	metadata        *map[string]interface{}
+	attributes      *map[string]interface{}
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
@@ -3588,54 +3588,54 @@ func (m *GroupRoleMutation) ResetAccountID() {
 	m.account_id = nil
 }
 
-// SetMetadata sets the metadata field.
-func (m *GroupRoleMutation) SetMetadata(value map[string]interface{}) {
-	m.metadata = &value
+// SetAttributes sets the attributes field.
+func (m *GroupRoleMutation) SetAttributes(value map[string]interface{}) {
+	m.attributes = &value
 }
 
-// Metadata returns the metadata value in the mutation.
-func (m *GroupRoleMutation) Metadata() (r map[string]interface{}, exists bool) {
-	v := m.metadata
+// Attributes returns the attributes value in the mutation.
+func (m *GroupRoleMutation) Attributes() (r map[string]interface{}, exists bool) {
+	v := m.attributes
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMetadata returns the old metadata value of the GroupRole.
+// OldAttributes returns the old attributes value of the GroupRole.
 // If the GroupRole object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *GroupRoleMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *GroupRoleMutation) OldAttributes(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMetadata is allowed only on UpdateOne operations")
+		return v, fmt.Errorf("OldAttributes is allowed only on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMetadata requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAttributes requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+		return v, fmt.Errorf("querying old value for OldAttributes: %w", err)
 	}
-	return oldValue.Metadata, nil
+	return oldValue.Attributes, nil
 }
 
-// ClearMetadata clears the value of metadata.
-func (m *GroupRoleMutation) ClearMetadata() {
-	m.metadata = nil
-	m.clearedFields[grouprole.FieldMetadata] = struct{}{}
+// ClearAttributes clears the value of attributes.
+func (m *GroupRoleMutation) ClearAttributes() {
+	m.attributes = nil
+	m.clearedFields[grouprole.FieldAttributes] = struct{}{}
 }
 
-// MetadataCleared returns if the field metadata was cleared in this mutation.
-func (m *GroupRoleMutation) MetadataCleared() bool {
-	_, ok := m.clearedFields[grouprole.FieldMetadata]
+// AttributesCleared returns if the field attributes was cleared in this mutation.
+func (m *GroupRoleMutation) AttributesCleared() bool {
+	_, ok := m.clearedFields[grouprole.FieldAttributes]
 	return ok
 }
 
-// ResetMetadata reset all changes of the "metadata" field.
-func (m *GroupRoleMutation) ResetMetadata() {
-	m.metadata = nil
-	delete(m.clearedFields, grouprole.FieldMetadata)
+// ResetAttributes reset all changes of the "attributes" field.
+func (m *GroupRoleMutation) ResetAttributes() {
+	m.attributes = nil
+	delete(m.clearedFields, grouprole.FieldAttributes)
 }
 
 // SetCreatedAt sets the created_at field.
@@ -3814,8 +3814,8 @@ func (m *GroupRoleMutation) Fields() []string {
 	if m.account_id != nil {
 		fields = append(fields, grouprole.FieldAccountID)
 	}
-	if m.metadata != nil {
-		fields = append(fields, grouprole.FieldMetadata)
+	if m.attributes != nil {
+		fields = append(fields, grouprole.FieldAttributes)
 	}
 	if m.created_at != nil {
 		fields = append(fields, grouprole.FieldCreatedAt)
@@ -3837,8 +3837,8 @@ func (m *GroupRoleMutation) Field(name string) (ent.Value, bool) {
 		return m.GroupID()
 	case grouprole.FieldAccountID:
 		return m.AccountID()
-	case grouprole.FieldMetadata:
-		return m.Metadata()
+	case grouprole.FieldAttributes:
+		return m.Attributes()
 	case grouprole.FieldCreatedAt:
 		return m.CreatedAt()
 	case grouprole.FieldUpdatedAt:
@@ -3858,8 +3858,8 @@ func (m *GroupRoleMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldGroupID(ctx)
 	case grouprole.FieldAccountID:
 		return m.OldAccountID(ctx)
-	case grouprole.FieldMetadata:
-		return m.OldMetadata(ctx)
+	case grouprole.FieldAttributes:
+		return m.OldAttributes(ctx)
 	case grouprole.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case grouprole.FieldUpdatedAt:
@@ -3894,12 +3894,12 @@ func (m *GroupRoleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAccountID(v)
 		return nil
-	case grouprole.FieldMetadata:
+	case grouprole.FieldAttributes:
 		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMetadata(v)
+		m.SetAttributes(v)
 		return nil
 	case grouprole.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3945,8 +3945,8 @@ func (m *GroupRoleMutation) AddField(name string, value ent.Value) error {
 // during this mutation.
 func (m *GroupRoleMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(grouprole.FieldMetadata) {
-		fields = append(fields, grouprole.FieldMetadata)
+	if m.FieldCleared(grouprole.FieldAttributes) {
+		fields = append(fields, grouprole.FieldAttributes)
 	}
 	return fields
 }
@@ -3962,8 +3962,8 @@ func (m *GroupRoleMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *GroupRoleMutation) ClearField(name string) error {
 	switch name {
-	case grouprole.FieldMetadata:
-		m.ClearMetadata()
+	case grouprole.FieldAttributes:
+		m.ClearAttributes()
 		return nil
 	}
 	return fmt.Errorf("unknown GroupRole nullable field %s", name)
@@ -3983,8 +3983,8 @@ func (m *GroupRoleMutation) ResetField(name string) error {
 	case grouprole.FieldAccountID:
 		m.ResetAccountID()
 		return nil
-	case grouprole.FieldMetadata:
-		m.ResetMetadata()
+	case grouprole.FieldAttributes:
+		m.ResetAttributes()
 		return nil
 	case grouprole.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -5111,7 +5111,7 @@ type WorkspaceMutation struct {
 	name                   *string
 	plan                   *string
 	description            *string
-	metadata               *map[string]interface{}
+	attributes             *map[string]interface{}
 	created_at             *time.Time
 	updated_at             *time.Time
 	clearedFields          map[string]struct{}
@@ -5337,54 +5337,54 @@ func (m *WorkspaceMutation) ResetDescription() {
 	delete(m.clearedFields, workspace.FieldDescription)
 }
 
-// SetMetadata sets the metadata field.
-func (m *WorkspaceMutation) SetMetadata(value map[string]interface{}) {
-	m.metadata = &value
+// SetAttributes sets the attributes field.
+func (m *WorkspaceMutation) SetAttributes(value map[string]interface{}) {
+	m.attributes = &value
 }
 
-// Metadata returns the metadata value in the mutation.
-func (m *WorkspaceMutation) Metadata() (r map[string]interface{}, exists bool) {
-	v := m.metadata
+// Attributes returns the attributes value in the mutation.
+func (m *WorkspaceMutation) Attributes() (r map[string]interface{}, exists bool) {
+	v := m.attributes
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMetadata returns the old metadata value of the Workspace.
+// OldAttributes returns the old attributes value of the Workspace.
 // If the Workspace object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *WorkspaceMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *WorkspaceMutation) OldAttributes(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMetadata is allowed only on UpdateOne operations")
+		return v, fmt.Errorf("OldAttributes is allowed only on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMetadata requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAttributes requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+		return v, fmt.Errorf("querying old value for OldAttributes: %w", err)
 	}
-	return oldValue.Metadata, nil
+	return oldValue.Attributes, nil
 }
 
-// ClearMetadata clears the value of metadata.
-func (m *WorkspaceMutation) ClearMetadata() {
-	m.metadata = nil
-	m.clearedFields[workspace.FieldMetadata] = struct{}{}
+// ClearAttributes clears the value of attributes.
+func (m *WorkspaceMutation) ClearAttributes() {
+	m.attributes = nil
+	m.clearedFields[workspace.FieldAttributes] = struct{}{}
 }
 
-// MetadataCleared returns if the field metadata was cleared in this mutation.
-func (m *WorkspaceMutation) MetadataCleared() bool {
-	_, ok := m.clearedFields[workspace.FieldMetadata]
+// AttributesCleared returns if the field attributes was cleared in this mutation.
+func (m *WorkspaceMutation) AttributesCleared() bool {
+	_, ok := m.clearedFields[workspace.FieldAttributes]
 	return ok
 }
 
-// ResetMetadata reset all changes of the "metadata" field.
-func (m *WorkspaceMutation) ResetMetadata() {
-	m.metadata = nil
-	delete(m.clearedFields, workspace.FieldMetadata)
+// ResetAttributes reset all changes of the "attributes" field.
+func (m *WorkspaceMutation) ResetAttributes() {
+	m.attributes = nil
+	delete(m.clearedFields, workspace.FieldAttributes)
 }
 
 // SetCreatedAt sets the created_at field.
@@ -5630,8 +5630,8 @@ func (m *WorkspaceMutation) Fields() []string {
 	if m.description != nil {
 		fields = append(fields, workspace.FieldDescription)
 	}
-	if m.metadata != nil {
-		fields = append(fields, workspace.FieldMetadata)
+	if m.attributes != nil {
+		fields = append(fields, workspace.FieldAttributes)
 	}
 	if m.created_at != nil {
 		fields = append(fields, workspace.FieldCreatedAt)
@@ -5653,8 +5653,8 @@ func (m *WorkspaceMutation) Field(name string) (ent.Value, bool) {
 		return m.Plan()
 	case workspace.FieldDescription:
 		return m.Description()
-	case workspace.FieldMetadata:
-		return m.Metadata()
+	case workspace.FieldAttributes:
+		return m.Attributes()
 	case workspace.FieldCreatedAt:
 		return m.CreatedAt()
 	case workspace.FieldUpdatedAt:
@@ -5674,8 +5674,8 @@ func (m *WorkspaceMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldPlan(ctx)
 	case workspace.FieldDescription:
 		return m.OldDescription(ctx)
-	case workspace.FieldMetadata:
-		return m.OldMetadata(ctx)
+	case workspace.FieldAttributes:
+		return m.OldAttributes(ctx)
 	case workspace.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case workspace.FieldUpdatedAt:
@@ -5710,12 +5710,12 @@ func (m *WorkspaceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
-	case workspace.FieldMetadata:
+	case workspace.FieldAttributes:
 		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMetadata(v)
+		m.SetAttributes(v)
 		return nil
 	case workspace.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -5764,8 +5764,8 @@ func (m *WorkspaceMutation) ClearedFields() []string {
 	if m.FieldCleared(workspace.FieldDescription) {
 		fields = append(fields, workspace.FieldDescription)
 	}
-	if m.FieldCleared(workspace.FieldMetadata) {
-		fields = append(fields, workspace.FieldMetadata)
+	if m.FieldCleared(workspace.FieldAttributes) {
+		fields = append(fields, workspace.FieldAttributes)
 	}
 	return fields
 }
@@ -5784,8 +5784,8 @@ func (m *WorkspaceMutation) ClearField(name string) error {
 	case workspace.FieldDescription:
 		m.ClearDescription()
 		return nil
-	case workspace.FieldMetadata:
-		m.ClearMetadata()
+	case workspace.FieldAttributes:
+		m.ClearAttributes()
 		return nil
 	}
 	return fmt.Errorf("unknown Workspace nullable field %s", name)
@@ -5805,8 +5805,8 @@ func (m *WorkspaceMutation) ResetField(name string) error {
 	case workspace.FieldDescription:
 		m.ResetDescription()
 		return nil
-	case workspace.FieldMetadata:
-		m.ResetMetadata()
+	case workspace.FieldAttributes:
+		m.ResetAttributes()
 		return nil
 	case workspace.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -6425,7 +6425,7 @@ type WorkspaceRoleMutation struct {
 	name              *string
 	workspace_id      *uuid.UUID
 	account_id        *uuid.UUID
-	metadata          *map[string]interface{}
+	attributes        *map[string]interface{}
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -6634,54 +6634,54 @@ func (m *WorkspaceRoleMutation) ResetAccountID() {
 	m.account_id = nil
 }
 
-// SetMetadata sets the metadata field.
-func (m *WorkspaceRoleMutation) SetMetadata(value map[string]interface{}) {
-	m.metadata = &value
+// SetAttributes sets the attributes field.
+func (m *WorkspaceRoleMutation) SetAttributes(value map[string]interface{}) {
+	m.attributes = &value
 }
 
-// Metadata returns the metadata value in the mutation.
-func (m *WorkspaceRoleMutation) Metadata() (r map[string]interface{}, exists bool) {
-	v := m.metadata
+// Attributes returns the attributes value in the mutation.
+func (m *WorkspaceRoleMutation) Attributes() (r map[string]interface{}, exists bool) {
+	v := m.attributes
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMetadata returns the old metadata value of the WorkspaceRole.
+// OldAttributes returns the old attributes value of the WorkspaceRole.
 // If the WorkspaceRole object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *WorkspaceRoleMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *WorkspaceRoleMutation) OldAttributes(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMetadata is allowed only on UpdateOne operations")
+		return v, fmt.Errorf("OldAttributes is allowed only on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMetadata requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAttributes requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+		return v, fmt.Errorf("querying old value for OldAttributes: %w", err)
 	}
-	return oldValue.Metadata, nil
+	return oldValue.Attributes, nil
 }
 
-// ClearMetadata clears the value of metadata.
-func (m *WorkspaceRoleMutation) ClearMetadata() {
-	m.metadata = nil
-	m.clearedFields[workspacerole.FieldMetadata] = struct{}{}
+// ClearAttributes clears the value of attributes.
+func (m *WorkspaceRoleMutation) ClearAttributes() {
+	m.attributes = nil
+	m.clearedFields[workspacerole.FieldAttributes] = struct{}{}
 }
 
-// MetadataCleared returns if the field metadata was cleared in this mutation.
-func (m *WorkspaceRoleMutation) MetadataCleared() bool {
-	_, ok := m.clearedFields[workspacerole.FieldMetadata]
+// AttributesCleared returns if the field attributes was cleared in this mutation.
+func (m *WorkspaceRoleMutation) AttributesCleared() bool {
+	_, ok := m.clearedFields[workspacerole.FieldAttributes]
 	return ok
 }
 
-// ResetMetadata reset all changes of the "metadata" field.
-func (m *WorkspaceRoleMutation) ResetMetadata() {
-	m.metadata = nil
-	delete(m.clearedFields, workspacerole.FieldMetadata)
+// ResetAttributes reset all changes of the "attributes" field.
+func (m *WorkspaceRoleMutation) ResetAttributes() {
+	m.attributes = nil
+	delete(m.clearedFields, workspacerole.FieldAttributes)
 }
 
 // SetCreatedAt sets the created_at field.
@@ -6860,8 +6860,8 @@ func (m *WorkspaceRoleMutation) Fields() []string {
 	if m.account_id != nil {
 		fields = append(fields, workspacerole.FieldAccountID)
 	}
-	if m.metadata != nil {
-		fields = append(fields, workspacerole.FieldMetadata)
+	if m.attributes != nil {
+		fields = append(fields, workspacerole.FieldAttributes)
 	}
 	if m.created_at != nil {
 		fields = append(fields, workspacerole.FieldCreatedAt)
@@ -6883,8 +6883,8 @@ func (m *WorkspaceRoleMutation) Field(name string) (ent.Value, bool) {
 		return m.WorkspaceID()
 	case workspacerole.FieldAccountID:
 		return m.AccountID()
-	case workspacerole.FieldMetadata:
-		return m.Metadata()
+	case workspacerole.FieldAttributes:
+		return m.Attributes()
 	case workspacerole.FieldCreatedAt:
 		return m.CreatedAt()
 	case workspacerole.FieldUpdatedAt:
@@ -6904,8 +6904,8 @@ func (m *WorkspaceRoleMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldWorkspaceID(ctx)
 	case workspacerole.FieldAccountID:
 		return m.OldAccountID(ctx)
-	case workspacerole.FieldMetadata:
-		return m.OldMetadata(ctx)
+	case workspacerole.FieldAttributes:
+		return m.OldAttributes(ctx)
 	case workspacerole.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case workspacerole.FieldUpdatedAt:
@@ -6940,12 +6940,12 @@ func (m *WorkspaceRoleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAccountID(v)
 		return nil
-	case workspacerole.FieldMetadata:
+	case workspacerole.FieldAttributes:
 		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMetadata(v)
+		m.SetAttributes(v)
 		return nil
 	case workspacerole.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -6991,8 +6991,8 @@ func (m *WorkspaceRoleMutation) AddField(name string, value ent.Value) error {
 // during this mutation.
 func (m *WorkspaceRoleMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(workspacerole.FieldMetadata) {
-		fields = append(fields, workspacerole.FieldMetadata)
+	if m.FieldCleared(workspacerole.FieldAttributes) {
+		fields = append(fields, workspacerole.FieldAttributes)
 	}
 	return fields
 }
@@ -7008,8 +7008,8 @@ func (m *WorkspaceRoleMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *WorkspaceRoleMutation) ClearField(name string) error {
 	switch name {
-	case workspacerole.FieldMetadata:
-		m.ClearMetadata()
+	case workspacerole.FieldAttributes:
+		m.ClearAttributes()
 		return nil
 	}
 	return fmt.Errorf("unknown WorkspaceRole nullable field %s", name)
@@ -7029,8 +7029,8 @@ func (m *WorkspaceRoleMutation) ResetField(name string) error {
 	case workspacerole.FieldAccountID:
 		m.ResetAccountID()
 		return nil
-	case workspacerole.FieldMetadata:
-		m.ResetMetadata()
+	case workspacerole.FieldAttributes:
+		m.ResetAttributes()
 		return nil
 	case workspacerole.FieldCreatedAt:
 		m.ResetCreatedAt()

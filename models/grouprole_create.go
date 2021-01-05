@@ -41,9 +41,9 @@ func (grc *GroupRoleCreate) SetAccountID(u uuid.UUID) *GroupRoleCreate {
 	return grc
 }
 
-// SetMetadata sets the metadata field.
-func (grc *GroupRoleCreate) SetMetadata(m map[string]interface{}) *GroupRoleCreate {
-	grc.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (grc *GroupRoleCreate) SetAttributes(m map[string]interface{}) *GroupRoleCreate {
+	grc.mutation.SetAttributes(m)
 	return grc
 }
 
@@ -250,13 +250,13 @@ func (grc *GroupRoleCreate) createSpec() (*GroupRole, *sqlgraph.CreateSpec) {
 		})
 		_node.AccountID = value
 	}
-	if value, ok := grc.mutation.Metadata(); ok {
+	if value, ok := grc.mutation.Attributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: grouprole.FieldMetadata,
+			Column: grouprole.FieldAttributes,
 		})
-		_node.Metadata = value
+		_node.Attributes = value
 	}
 	if value, ok := grc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

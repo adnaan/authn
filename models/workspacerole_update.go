@@ -49,15 +49,15 @@ func (wru *WorkspaceRoleUpdate) SetAccountID(u uuid.UUID) *WorkspaceRoleUpdate {
 	return wru
 }
 
-// SetMetadata sets the metadata field.
-func (wru *WorkspaceRoleUpdate) SetMetadata(m map[string]interface{}) *WorkspaceRoleUpdate {
-	wru.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (wru *WorkspaceRoleUpdate) SetAttributes(m map[string]interface{}) *WorkspaceRoleUpdate {
+	wru.mutation.SetAttributes(m)
 	return wru
 }
 
-// ClearMetadata clears the value of metadata.
-func (wru *WorkspaceRoleUpdate) ClearMetadata() *WorkspaceRoleUpdate {
-	wru.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (wru *WorkspaceRoleUpdate) ClearAttributes() *WorkspaceRoleUpdate {
+	wru.mutation.ClearAttributes()
 	return wru
 }
 
@@ -227,17 +227,17 @@ func (wru *WorkspaceRoleUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: workspacerole.FieldAccountID,
 		})
 	}
-	if value, ok := wru.mutation.Metadata(); ok {
+	if value, ok := wru.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: workspacerole.FieldMetadata,
+			Column: workspacerole.FieldAttributes,
 		})
 	}
-	if wru.mutation.MetadataCleared() {
+	if wru.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: workspacerole.FieldMetadata,
+			Column: workspacerole.FieldAttributes,
 		})
 	}
 	if value, ok := wru.mutation.UpdatedAt(); ok {
@@ -353,15 +353,15 @@ func (wruo *WorkspaceRoleUpdateOne) SetAccountID(u uuid.UUID) *WorkspaceRoleUpda
 	return wruo
 }
 
-// SetMetadata sets the metadata field.
-func (wruo *WorkspaceRoleUpdateOne) SetMetadata(m map[string]interface{}) *WorkspaceRoleUpdateOne {
-	wruo.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (wruo *WorkspaceRoleUpdateOne) SetAttributes(m map[string]interface{}) *WorkspaceRoleUpdateOne {
+	wruo.mutation.SetAttributes(m)
 	return wruo
 }
 
-// ClearMetadata clears the value of metadata.
-func (wruo *WorkspaceRoleUpdateOne) ClearMetadata() *WorkspaceRoleUpdateOne {
-	wruo.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (wruo *WorkspaceRoleUpdateOne) ClearAttributes() *WorkspaceRoleUpdateOne {
+	wruo.mutation.ClearAttributes()
 	return wruo
 }
 
@@ -529,17 +529,17 @@ func (wruo *WorkspaceRoleUpdateOne) sqlSave(ctx context.Context) (_node *Workspa
 			Column: workspacerole.FieldAccountID,
 		})
 	}
-	if value, ok := wruo.mutation.Metadata(); ok {
+	if value, ok := wruo.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: workspacerole.FieldMetadata,
+			Column: workspacerole.FieldAttributes,
 		})
 	}
-	if wruo.mutation.MetadataCleared() {
+	if wruo.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: workspacerole.FieldMetadata,
+			Column: workspacerole.FieldAttributes,
 		})
 	}
 	if value, ok := wruo.mutation.UpdatedAt(); ok {

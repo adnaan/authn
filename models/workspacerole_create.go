@@ -41,9 +41,9 @@ func (wrc *WorkspaceRoleCreate) SetAccountID(u uuid.UUID) *WorkspaceRoleCreate {
 	return wrc
 }
 
-// SetMetadata sets the metadata field.
-func (wrc *WorkspaceRoleCreate) SetMetadata(m map[string]interface{}) *WorkspaceRoleCreate {
-	wrc.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (wrc *WorkspaceRoleCreate) SetAttributes(m map[string]interface{}) *WorkspaceRoleCreate {
+	wrc.mutation.SetAttributes(m)
 	return wrc
 }
 
@@ -250,13 +250,13 @@ func (wrc *WorkspaceRoleCreate) createSpec() (*WorkspaceRole, *sqlgraph.CreateSp
 		})
 		_node.AccountID = value
 	}
-	if value, ok := wrc.mutation.Metadata(); ok {
+	if value, ok := wrc.mutation.Attributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: workspacerole.FieldMetadata,
+			Column: workspacerole.FieldAttributes,
 		})
-		_node.Metadata = value
+		_node.Attributes = value
 	}
 	if value, ok := wrc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

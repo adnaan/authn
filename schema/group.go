@@ -31,7 +31,7 @@ func (Group) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("name").NotEmpty(),
 		field.String("description").NotEmpty().Optional(),
-		field.JSON("metadata", map[string]interface{}{}).Optional(),
+		field.JSON("attributes", map[string]interface{}{}).Optional(),
 		field.Time("created_at").Immutable().Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

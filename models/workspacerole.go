@@ -26,8 +26,8 @@ type WorkspaceRole struct {
 	WorkspaceID uuid.UUID `json:"workspace_id,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID uuid.UUID `json:"account_id,omitempty"`
-	// Metadata holds the value of the "metadata" field.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	// Attributes holds the value of the "attributes" field.
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -85,7 +85,7 @@ func (*WorkspaceRole) scanValues() []interface{} {
 		&sql.NullString{}, // name
 		&uuid.UUID{},      // workspace_id
 		&uuid.UUID{},      // account_id
-		&[]byte{},         // metadata
+		&[]byte{},         // attributes
 		&sql.NullTime{},   // created_at
 		&sql.NullTime{},   // updated_at
 	}
@@ -128,10 +128,10 @@ func (wr *WorkspaceRole) assignValues(values ...interface{}) error {
 	}
 
 	if value, ok := values[3].(*[]byte); !ok {
-		return fmt.Errorf("unexpected type %T for field metadata", values[3])
+		return fmt.Errorf("unexpected type %T for field attributes", values[3])
 	} else if value != nil && len(*value) > 0 {
-		if err := json.Unmarshal(*value, &wr.Metadata); err != nil {
-			return fmt.Errorf("unmarshal field metadata: %v", err)
+		if err := json.Unmarshal(*value, &wr.Attributes); err != nil {
+			return fmt.Errorf("unmarshal field attributes: %v", err)
 		}
 	}
 	if value, ok := values[4].(*sql.NullTime); !ok {
@@ -199,8 +199,8 @@ func (wr *WorkspaceRole) String() string {
 	builder.WriteString(fmt.Sprintf("%v", wr.WorkspaceID))
 	builder.WriteString(", account_id=")
 	builder.WriteString(fmt.Sprintf("%v", wr.AccountID))
-	builder.WriteString(", metadata=")
-	builder.WriteString(fmt.Sprintf("%v", wr.Metadata))
+	builder.WriteString(", attributes=")
+	builder.WriteString(fmt.Sprintf("%v", wr.Attributes))
 	builder.WriteString(", created_at=")
 	builder.WriteString(wr.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

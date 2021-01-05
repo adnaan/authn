@@ -32,7 +32,7 @@ func (GroupRole) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.UUID("group_id", uuid.UUID{}),
 		field.UUID("account_id", uuid.UUID{}),
-		field.JSON("metadata", map[string]interface{}{}).Optional(),
+		field.JSON("attributes", map[string]interface{}{}).Optional(),
 		field.Time("created_at").Immutable().Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

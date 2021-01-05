@@ -43,9 +43,9 @@ func (gc *GroupCreate) SetNillableDescription(s *string) *GroupCreate {
 	return gc
 }
 
-// SetMetadata sets the metadata field.
-func (gc *GroupCreate) SetMetadata(m map[string]interface{}) *GroupCreate {
-	gc.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (gc *GroupCreate) SetAttributes(m map[string]interface{}) *GroupCreate {
+	gc.mutation.SetAttributes(m)
 	return gc
 }
 
@@ -244,13 +244,13 @@ func (gc *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 		})
 		_node.Description = value
 	}
-	if value, ok := gc.mutation.Metadata(); ok {
+	if value, ok := gc.mutation.Attributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: group.FieldMetadata,
+			Column: group.FieldAttributes,
 		})
-		_node.Metadata = value
+		_node.Attributes = value
 	}
 	if value, ok := gc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

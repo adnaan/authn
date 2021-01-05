@@ -64,15 +64,15 @@ func (wu *WorkspaceUpdate) ClearDescription() *WorkspaceUpdate {
 	return wu
 }
 
-// SetMetadata sets the metadata field.
-func (wu *WorkspaceUpdate) SetMetadata(m map[string]interface{}) *WorkspaceUpdate {
-	wu.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (wu *WorkspaceUpdate) SetAttributes(m map[string]interface{}) *WorkspaceUpdate {
+	wu.mutation.SetAttributes(m)
 	return wu
 }
 
-// ClearMetadata clears the value of metadata.
-func (wu *WorkspaceUpdate) ClearMetadata() *WorkspaceUpdate {
-	wu.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (wu *WorkspaceUpdate) ClearAttributes() *WorkspaceUpdate {
+	wu.mutation.ClearAttributes()
 	return wu
 }
 
@@ -310,17 +310,17 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: workspace.FieldDescription,
 		})
 	}
-	if value, ok := wu.mutation.Metadata(); ok {
+	if value, ok := wu.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: workspace.FieldMetadata,
+			Column: workspace.FieldAttributes,
 		})
 	}
-	if wu.mutation.MetadataCleared() {
+	if wu.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: workspace.FieldMetadata,
+			Column: workspace.FieldAttributes,
 		})
 	}
 	if value, ok := wu.mutation.UpdatedAt(); ok {
@@ -523,15 +523,15 @@ func (wuo *WorkspaceUpdateOne) ClearDescription() *WorkspaceUpdateOne {
 	return wuo
 }
 
-// SetMetadata sets the metadata field.
-func (wuo *WorkspaceUpdateOne) SetMetadata(m map[string]interface{}) *WorkspaceUpdateOne {
-	wuo.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (wuo *WorkspaceUpdateOne) SetAttributes(m map[string]interface{}) *WorkspaceUpdateOne {
+	wuo.mutation.SetAttributes(m)
 	return wuo
 }
 
-// ClearMetadata clears the value of metadata.
-func (wuo *WorkspaceUpdateOne) ClearMetadata() *WorkspaceUpdateOne {
-	wuo.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (wuo *WorkspaceUpdateOne) ClearAttributes() *WorkspaceUpdateOne {
+	wuo.mutation.ClearAttributes()
 	return wuo
 }
 
@@ -767,17 +767,17 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 			Column: workspace.FieldDescription,
 		})
 	}
-	if value, ok := wuo.mutation.Metadata(); ok {
+	if value, ok := wuo.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: workspace.FieldMetadata,
+			Column: workspace.FieldAttributes,
 		})
 	}
-	if wuo.mutation.MetadataCleared() {
+	if wuo.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: workspace.FieldMetadata,
+			Column: workspace.FieldAttributes,
 		})
 	}
 	if value, ok := wuo.mutation.UpdatedAt(); ok {

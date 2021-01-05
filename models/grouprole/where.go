@@ -392,17 +392,17 @@ func AccountIDLTE(v uuid.UUID) predicate.GroupRole {
 	})
 }
 
-// MetadataIsNil applies the IsNil predicate on the "metadata" field.
-func MetadataIsNil() predicate.GroupRole {
+// AttributesIsNil applies the IsNil predicate on the "attributes" field.
+func AttributesIsNil() predicate.GroupRole {
 	return predicate.GroupRole(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldMetadata)))
+		s.Where(sql.IsNull(s.C(FieldAttributes)))
 	})
 }
 
-// MetadataNotNil applies the NotNil predicate on the "metadata" field.
-func MetadataNotNil() predicate.GroupRole {
+// AttributesNotNil applies the NotNil predicate on the "attributes" field.
+func AttributesNotNil() predicate.GroupRole {
 	return predicate.GroupRole(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldMetadata)))
+		s.Where(sql.NotNull(s.C(FieldAttributes)))
 	})
 }
 

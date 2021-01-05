@@ -211,9 +211,9 @@ func (ac *AccountCreate) SetNillableEmailChangeToken(s *string) *AccountCreate {
 	return ac
 }
 
-// SetMetadata sets the metadata field.
-func (ac *AccountCreate) SetMetadata(m map[string]interface{}) *AccountCreate {
-	ac.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (ac *AccountCreate) SetAttributes(m map[string]interface{}) *AccountCreate {
+	ac.mutation.SetAttributes(m)
 	return ac
 }
 
@@ -472,8 +472,8 @@ func (ac *AccountCreate) check() error {
 			return &ValidationError{Name: "email_change_token", err: fmt.Errorf("models: validator failed for field \"email_change_token\": %w", err)}
 		}
 	}
-	if _, ok := ac.mutation.Metadata(); !ok {
-		return &ValidationError{Name: "metadata", err: errors.New("models: missing required field \"metadata\"")}
+	if _, ok := ac.mutation.Attributes(); !ok {
+		return &ValidationError{Name: "attributes", err: errors.New("models: missing required field \"attributes\"")}
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("models: missing required field \"created_at\"")}
@@ -630,13 +630,13 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		})
 		_node.EmailChangeToken = &value
 	}
-	if value, ok := ac.mutation.Metadata(); ok {
+	if value, ok := ac.mutation.Attributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: account.FieldMetadata,
+			Column: account.FieldAttributes,
 		})
-		_node.Metadata = value
+		_node.Attributes = value
 	}
 	if value, ok := ac.mutation.Roles(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

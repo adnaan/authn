@@ -42,15 +42,15 @@ func (aru *AccountRoleUpdate) SetAccountID(u uuid.UUID) *AccountRoleUpdate {
 	return aru
 }
 
-// SetMetadata sets the metadata field.
-func (aru *AccountRoleUpdate) SetMetadata(m map[string]interface{}) *AccountRoleUpdate {
-	aru.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (aru *AccountRoleUpdate) SetAttributes(m map[string]interface{}) *AccountRoleUpdate {
+	aru.mutation.SetAttributes(m)
 	return aru
 }
 
-// ClearMetadata clears the value of metadata.
-func (aru *AccountRoleUpdate) ClearMetadata() *AccountRoleUpdate {
-	aru.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (aru *AccountRoleUpdate) ClearAttributes() *AccountRoleUpdate {
+	aru.mutation.ClearAttributes()
 	return aru
 }
 
@@ -193,17 +193,17 @@ func (aru *AccountRoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: accountrole.FieldAccountID,
 		})
 	}
-	if value, ok := aru.mutation.Metadata(); ok {
+	if value, ok := aru.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: accountrole.FieldMetadata,
+			Column: accountrole.FieldAttributes,
 		})
 	}
-	if aru.mutation.MetadataCleared() {
+	if aru.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: accountrole.FieldMetadata,
+			Column: accountrole.FieldAttributes,
 		})
 	}
 	if value, ok := aru.mutation.UpdatedAt(); ok {
@@ -278,15 +278,15 @@ func (aruo *AccountRoleUpdateOne) SetAccountID(u uuid.UUID) *AccountRoleUpdateOn
 	return aruo
 }
 
-// SetMetadata sets the metadata field.
-func (aruo *AccountRoleUpdateOne) SetMetadata(m map[string]interface{}) *AccountRoleUpdateOne {
-	aruo.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (aruo *AccountRoleUpdateOne) SetAttributes(m map[string]interface{}) *AccountRoleUpdateOne {
+	aruo.mutation.SetAttributes(m)
 	return aruo
 }
 
-// ClearMetadata clears the value of metadata.
-func (aruo *AccountRoleUpdateOne) ClearMetadata() *AccountRoleUpdateOne {
-	aruo.mutation.ClearMetadata()
+// ClearAttributes clears the value of attributes.
+func (aruo *AccountRoleUpdateOne) ClearAttributes() *AccountRoleUpdateOne {
+	aruo.mutation.ClearAttributes()
 	return aruo
 }
 
@@ -427,17 +427,17 @@ func (aruo *AccountRoleUpdateOne) sqlSave(ctx context.Context) (_node *AccountRo
 			Column: accountrole.FieldAccountID,
 		})
 	}
-	if value, ok := aruo.mutation.Metadata(); ok {
+	if value, ok := aruo.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: accountrole.FieldMetadata,
+			Column: accountrole.FieldAttributes,
 		})
 	}
-	if aruo.mutation.MetadataCleared() {
+	if aruo.mutation.AttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: accountrole.FieldMetadata,
+			Column: accountrole.FieldAttributes,
 		})
 	}
 	if value, ok := aruo.mutation.UpdatedAt(); ok {

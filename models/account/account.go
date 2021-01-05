@@ -43,8 +43,8 @@ const (
 	FieldEmailChangeSentAt = "email_change_sent_at"
 	// FieldEmailChangeToken holds the string denoting the email_change_token field in the database.
 	FieldEmailChangeToken = "email_change_token"
-	// FieldMetadata holds the string denoting the metadata field in the database.
-	FieldMetadata = "metadata"
+	// FieldAttributes holds the string denoting the attributes field in the database.
+	FieldAttributes = "attributes"
 	// FieldRoles holds the string denoting the roles field in the database.
 	FieldRoles = "roles"
 	// FieldTeams holds the string denoting the teams field in the database.
@@ -115,7 +115,7 @@ var Columns = []string{
 	FieldEmailChange,
 	FieldEmailChangeSentAt,
 	FieldEmailChangeToken,
-	FieldMetadata,
+	FieldAttributes,
 	FieldRoles,
 	FieldTeams,
 	FieldCreatedAt,

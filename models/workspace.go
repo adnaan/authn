@@ -25,8 +25,8 @@ type Workspace struct {
 	Plan string `json:"plan,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
-	// Metadata holds the value of the "metadata" field.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	// Attributes holds the value of the "attributes" field.
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -89,7 +89,7 @@ func (*Workspace) scanValues() []interface{} {
 		&sql.NullString{}, // name
 		&sql.NullString{}, // plan
 		&sql.NullString{}, // description
-		&[]byte{},         // metadata
+		&[]byte{},         // attributes
 		&sql.NullTime{},   // created_at
 		&sql.NullTime{},   // updated_at
 	}
@@ -131,10 +131,10 @@ func (w *Workspace) assignValues(values ...interface{}) error {
 	}
 
 	if value, ok := values[3].(*[]byte); !ok {
-		return fmt.Errorf("unexpected type %T for field metadata", values[3])
+		return fmt.Errorf("unexpected type %T for field attributes", values[3])
 	} else if value != nil && len(*value) > 0 {
-		if err := json.Unmarshal(*value, &w.Metadata); err != nil {
-			return fmt.Errorf("unmarshal field metadata: %v", err)
+		if err := json.Unmarshal(*value, &w.Attributes); err != nil {
+			return fmt.Errorf("unmarshal field attributes: %v", err)
 		}
 	}
 	if value, ok := values[4].(*sql.NullTime); !ok {
@@ -202,8 +202,8 @@ func (w *Workspace) String() string {
 	builder.WriteString(w.Plan)
 	builder.WriteString(", description=")
 	builder.WriteString(w.Description)
-	builder.WriteString(", metadata=")
-	builder.WriteString(fmt.Sprintf("%v", w.Metadata))
+	builder.WriteString(", attributes=")
+	builder.WriteString(fmt.Sprintf("%v", w.Attributes))
 	builder.WriteString(", created_at=")
 	builder.WriteString(w.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

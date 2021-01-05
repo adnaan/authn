@@ -290,9 +290,9 @@ func (au *AccountUpdate) ClearEmailChangeToken() *AccountUpdate {
 	return au
 }
 
-// SetMetadata sets the metadata field.
-func (au *AccountUpdate) SetMetadata(m map[string]interface{}) *AccountUpdate {
-	au.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (au *AccountUpdate) SetAttributes(m map[string]interface{}) *AccountUpdate {
+	au.mutation.SetAttributes(m)
 	return au
 }
 
@@ -800,11 +800,11 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: account.FieldEmailChangeToken,
 		})
 	}
-	if value, ok := au.mutation.Metadata(); ok {
+	if value, ok := au.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: account.FieldMetadata,
+			Column: account.FieldAttributes,
 		})
 	}
 	if value, ok := au.mutation.Roles(); ok {
@@ -1326,9 +1326,9 @@ func (auo *AccountUpdateOne) ClearEmailChangeToken() *AccountUpdateOne {
 	return auo
 }
 
-// SetMetadata sets the metadata field.
-func (auo *AccountUpdateOne) SetMetadata(m map[string]interface{}) *AccountUpdateOne {
-	auo.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (auo *AccountUpdateOne) SetAttributes(m map[string]interface{}) *AccountUpdateOne {
+	auo.mutation.SetAttributes(m)
 	return auo
 }
 
@@ -1834,11 +1834,11 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 			Column: account.FieldEmailChangeToken,
 		})
 	}
-	if value, ok := auo.mutation.Metadata(); ok {
+	if value, ok := auo.mutation.Attributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: account.FieldMetadata,
+			Column: account.FieldAttributes,
 		})
 	}
 	if value, ok := auo.mutation.Roles(); ok {

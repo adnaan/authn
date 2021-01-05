@@ -34,9 +34,9 @@ func (arc *AccountRoleCreate) SetAccountID(u uuid.UUID) *AccountRoleCreate {
 	return arc
 }
 
-// SetMetadata sets the metadata field.
-func (arc *AccountRoleCreate) SetMetadata(m map[string]interface{}) *AccountRoleCreate {
-	arc.mutation.SetMetadata(m)
+// SetAttributes sets the attributes field.
+func (arc *AccountRoleCreate) SetAttributes(m map[string]interface{}) *AccountRoleCreate {
+	arc.mutation.SetAttributes(m)
 	return arc
 }
 
@@ -218,13 +218,13 @@ func (arc *AccountRoleCreate) createSpec() (*AccountRole, *sqlgraph.CreateSpec) 
 		})
 		_node.AccountID = value
 	}
-	if value, ok := arc.mutation.Metadata(); ok {
+	if value, ok := arc.mutation.Attributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: accountrole.FieldMetadata,
+			Column: accountrole.FieldAttributes,
 		})
-		_node.Metadata = value
+		_node.Attributes = value
 	}
 	if value, ok := arc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

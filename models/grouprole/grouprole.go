@@ -19,8 +19,8 @@ const (
 	FieldGroupID = "group_id"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
-	// FieldMetadata holds the string denoting the metadata field in the database.
-	FieldMetadata = "metadata"
+	// FieldAttributes holds the string denoting the attributes field in the database.
+	FieldAttributes = "attributes"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -55,7 +55,7 @@ var Columns = []string{
 	FieldName,
 	FieldGroupID,
 	FieldAccountID,
-	FieldMetadata,
+	FieldAttributes,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
