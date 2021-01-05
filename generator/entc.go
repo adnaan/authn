@@ -15,8 +15,9 @@ func main() {
 		Header: `
 			// Code generated (@generated) by entc, DO NOT EDIT.
 		`,
-		IDType: &field.TypeInfo{Type: field.TypeInt},
-		Target: "../models",
+		IDType:  &field.TypeInfo{Type: field.TypeInt},
+		Target:  "../models",
+		Package: "github.com/adnaan/authzen/models",
 	})
 	if err != nil {
 		log.Fatal("running ent codegen:", err)
