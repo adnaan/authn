@@ -1,4 +1,4 @@
-package authzen
+package authn
 
 import (
 	"net"
@@ -32,8 +32,7 @@ const (
 	Confirmation MailType = iota
 	Recovery
 	ChangeEmail
-	OTP
-	InviteMember
+	Passwordless
 )
 
 type SendMailFunc func(mailType MailType, token, sendTo string, metadata map[string]interface{}) error

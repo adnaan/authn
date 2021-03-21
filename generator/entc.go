@@ -17,7 +17,7 @@ func main() {
 		`,
 		IDType:  &field.TypeInfo{Type: field.TypeInt},
 		Target:  "../models",
-		Package: "github.com/adnaan/authzen/models",
+		Package: "github.com/adnaan/authn/models",
 	})
 	if err != nil {
 		log.Fatal("running ent codegen:", err)

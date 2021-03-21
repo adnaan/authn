@@ -1,10 +1,10 @@
-package authzen
+package authn
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/adnaan/authzen/models"
+	"github.com/adnaan/authn/models"
 )
 
 func withTx(ctx context.Context, client *models.Client, fn func(tx *models.Tx) error) error {

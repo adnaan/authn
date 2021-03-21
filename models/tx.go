@@ -14,22 +14,8 @@ type Tx struct {
 	config
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
-	// AccountRole is the client for interacting with the AccountRole builders.
-	AccountRole *AccountRoleClient
-	// Group is the client for interacting with the Group builders.
-	Group *GroupClient
-	// GroupRole is the client for interacting with the GroupRole builders.
-	GroupRole *GroupRoleClient
-	// Permission is the client for interacting with the Permission builders.
-	Permission *PermissionClient
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
-	// Workspace is the client for interacting with the Workspace builders.
-	Workspace *WorkspaceClient
-	// WorkspaceInvitation is the client for interacting with the WorkspaceInvitation builders.
-	WorkspaceInvitation *WorkspaceInvitationClient
-	// WorkspaceRole is the client for interacting with the WorkspaceRole builders.
-	WorkspaceRole *WorkspaceRoleClient
 
 	// lazily loaded.
 	client     *Client
@@ -166,14 +152,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
-	tx.AccountRole = NewAccountRoleClient(tx.config)
-	tx.Group = NewGroupClient(tx.config)
-	tx.GroupRole = NewGroupRoleClient(tx.config)
-	tx.Permission = NewPermissionClient(tx.config)
 	tx.Session = NewSessionClient(tx.config)
-	tx.Workspace = NewWorkspaceClient(tx.config)
-	tx.WorkspaceInvitation = NewWorkspaceInvitationClient(tx.config)
-	tx.WorkspaceRole = NewWorkspaceRoleClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

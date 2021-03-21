@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/adnaan/authzen/models"
+	"github.com/adnaan/authn/models"
 	// required by schema hooks.
-	_ "github.com/adnaan/authzen/models/runtime"
+	_ "github.com/adnaan/authn/models/runtime"
 
 	"github.com/facebook/ent/dialect/sql/schema"
 )

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/adnaan/authzen/models/session"
+	"github.com/adnaan/authn/models/session"
 	"github.com/facebook/ent/dialect/sql/sqlgraph"
 	"github.com/facebook/ent/schema/field"
 )

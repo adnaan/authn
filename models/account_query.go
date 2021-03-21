@@ -4,17 +4,12 @@ package models
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 
-	"github.com/adnaan/authzen/models/account"
-	"github.com/adnaan/authzen/models/accountrole"
-	"github.com/adnaan/authzen/models/grouprole"
-	"github.com/adnaan/authzen/models/predicate"
-	"github.com/adnaan/authzen/models/workspace"
-	"github.com/adnaan/authzen/models/workspacerole"
+	"github.com/adnaan/authn/models/account"
+	"github.com/adnaan/authn/models/predicate"
 	"github.com/facebook/ent/dialect/sql"
 	"github.com/facebook/ent/dialect/sql/sqlgraph"
 	"github.com/facebook/ent/schema/field"
@@ -28,11 +23,6 @@ type AccountQuery struct {
 	offset     *int
 	order      []OrderFunc
 	predicates []predicate.Account
-	// eager-loading edges.
-	withWorkspace      *WorkspaceQuery
-	withWorkspaceRoles *WorkspaceRoleQuery
-	withGroupRoles     *GroupRoleQuery
-	withAccountRoles   *AccountRoleQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,94 +50,6 @@ func (aq *AccountQuery) Offset(offset int) *AccountQuery {
 func (aq *AccountQuery) Order(o ...OrderFunc) *AccountQuery {
 	aq.order = append(aq.order, o...)
 	return aq
-}
-
-// QueryWorkspace chains the current query on the workspace edge.
-func (aq *AccountQuery) QueryWorkspace() *WorkspaceQuery {
-	query := &WorkspaceQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery()
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, selector),
-			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, account.WorkspaceTable, account.WorkspaceColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryWorkspaceRoles chains the current query on the workspace_roles edge.
-func (aq *AccountQuery) QueryWorkspaceRoles() *WorkspaceRoleQuery {
-	query := &WorkspaceRoleQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery()
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, selector),
-			sqlgraph.To(workspacerole.Table, workspacerole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, account.WorkspaceRolesTable, account.WorkspaceRolesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryGroupRoles chains the current query on the group_roles edge.
-func (aq *AccountQuery) QueryGroupRoles() *GroupRoleQuery {
-	query := &GroupRoleQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery()
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, selector),
-			sqlgraph.To(grouprole.Table, grouprole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, account.GroupRolesTable, account.GroupRolesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryAccountRoles chains the current query on the account_roles edge.
-func (aq *AccountQuery) QueryAccountRoles() *AccountRoleQuery {
-	query := &AccountRoleQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery()
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, selector),
-			sqlgraph.To(accountrole.Table, accountrole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, account.AccountRolesTable, account.AccountRolesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first Account entity in the query. Returns *NotFoundError when no account was found.
@@ -320,63 +222,15 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 		return nil
 	}
 	return &AccountQuery{
-		config:             aq.config,
-		limit:              aq.limit,
-		offset:             aq.offset,
-		order:              append([]OrderFunc{}, aq.order...),
-		predicates:         append([]predicate.Account{}, aq.predicates...),
-		withWorkspace:      aq.withWorkspace.Clone(),
-		withWorkspaceRoles: aq.withWorkspaceRoles.Clone(),
-		withGroupRoles:     aq.withGroupRoles.Clone(),
-		withAccountRoles:   aq.withAccountRoles.Clone(),
+		config:     aq.config,
+		limit:      aq.limit,
+		offset:     aq.offset,
+		order:      append([]OrderFunc{}, aq.order...),
+		predicates: append([]predicate.Account{}, aq.predicates...),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
 	}
-}
-
-//  WithWorkspace tells the query-builder to eager-loads the nodes that are connected to
-// the "workspace" edge. The optional arguments used to configure the query builder of the edge.
-func (aq *AccountQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *AccountQuery {
-	query := &WorkspaceQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withWorkspace = query
-	return aq
-}
-
-//  WithWorkspaceRoles tells the query-builder to eager-loads the nodes that are connected to
-// the "workspace_roles" edge. The optional arguments used to configure the query builder of the edge.
-func (aq *AccountQuery) WithWorkspaceRoles(opts ...func(*WorkspaceRoleQuery)) *AccountQuery {
-	query := &WorkspaceRoleQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withWorkspaceRoles = query
-	return aq
-}
-
-//  WithGroupRoles tells the query-builder to eager-loads the nodes that are connected to
-// the "group_roles" edge. The optional arguments used to configure the query builder of the edge.
-func (aq *AccountQuery) WithGroupRoles(opts ...func(*GroupRoleQuery)) *AccountQuery {
-	query := &GroupRoleQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withGroupRoles = query
-	return aq
-}
-
-//  WithAccountRoles tells the query-builder to eager-loads the nodes that are connected to
-// the "account_roles" edge. The optional arguments used to configure the query builder of the edge.
-func (aq *AccountQuery) WithAccountRoles(opts ...func(*AccountRoleQuery)) *AccountQuery {
-	query := &AccountRoleQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withAccountRoles = query
-	return aq
 }
 
 // GroupBy used to group vertices by one or more fields/columns.
@@ -385,12 +239,12 @@ func (aq *AccountQuery) WithAccountRoles(opts ...func(*AccountRoleQuery)) *Accou
 // Example:
 //
 //	var v []struct {
-//		BillingID string `json:"billing_id,omitempty"`
+//		Provider string `json:"provider,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Account.Query().
-//		GroupBy(account.FieldBillingID).
+//		GroupBy(account.FieldProvider).
 //		Aggregate(models.Count()).
 //		Scan(ctx, &v)
 //
@@ -411,11 +265,11 @@ func (aq *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy 
 // Example:
 //
 //	var v []struct {
-//		BillingID string `json:"billing_id,omitempty"`
+//		Provider string `json:"provider,omitempty"`
 //	}
 //
 //	client.Account.Query().
-//		Select(account.FieldBillingID).
+//		Select(account.FieldProvider).
 //		Scan(ctx, &v)
 //
 func (aq *AccountQuery) Select(field string, fields ...string) *AccountSelect {
@@ -443,14 +297,8 @@ func (aq *AccountQuery) prepareQuery(ctx context.Context) error {
 
 func (aq *AccountQuery) sqlAll(ctx context.Context) ([]*Account, error) {
 	var (
-		nodes       = []*Account{}
-		_spec       = aq.querySpec()
-		loadedTypes = [4]bool{
-			aq.withWorkspace != nil,
-			aq.withWorkspaceRoles != nil,
-			aq.withGroupRoles != nil,
-			aq.withAccountRoles != nil,
-		}
+		nodes = []*Account{}
+		_spec = aq.querySpec()
 	)
 	_spec.ScanValues = func() []interface{} {
 		node := &Account{config: aq.config}
@@ -463,7 +311,6 @@ func (aq *AccountQuery) sqlAll(ctx context.Context) ([]*Account, error) {
 			return fmt.Errorf("models: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(values...)
 	}
 	if err := sqlgraph.QueryNodes(ctx, aq.driver, _spec); err != nil {
@@ -472,122 +319,6 @@ func (aq *AccountQuery) sqlAll(ctx context.Context) ([]*Account, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-
-	if query := aq.withWorkspace; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Account)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-		}
-		query.withFKs = true
-		query.Where(predicate.Workspace(func(s *sql.Selector) {
-			s.Where(sql.InValues(account.WorkspaceColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.account_workspace
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "account_workspace" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "account_workspace" returned %v for node %v`, *fk, n.ID)
-			}
-			node.Edges.Workspace = n
-		}
-	}
-
-	if query := aq.withWorkspaceRoles; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Account)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.WorkspaceRoles = []*WorkspaceRole{}
-		}
-		query.withFKs = true
-		query.Where(predicate.WorkspaceRole(func(s *sql.Selector) {
-			s.Where(sql.InValues(account.WorkspaceRolesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.account_workspace_roles
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "account_workspace_roles" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "account_workspace_roles" returned %v for node %v`, *fk, n.ID)
-			}
-			node.Edges.WorkspaceRoles = append(node.Edges.WorkspaceRoles, n)
-		}
-	}
-
-	if query := aq.withGroupRoles; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Account)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.GroupRoles = []*GroupRole{}
-		}
-		query.withFKs = true
-		query.Where(predicate.GroupRole(func(s *sql.Selector) {
-			s.Where(sql.InValues(account.GroupRolesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.account_group_roles
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "account_group_roles" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "account_group_roles" returned %v for node %v`, *fk, n.ID)
-			}
-			node.Edges.GroupRoles = append(node.Edges.GroupRoles, n)
-		}
-	}
-
-	if query := aq.withAccountRoles; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Account)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.AccountRoles = []*AccountRole{}
-		}
-		query.withFKs = true
-		query.Where(predicate.AccountRole(func(s *sql.Selector) {
-			s.Where(sql.InValues(account.AccountRolesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.account_account_roles
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "account_account_roles" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "account_account_roles" returned %v for node %v`, *fk, n.ID)
-			}
-			node.Edges.AccountRoles = append(node.Edges.AccountRoles, n)
-		}
-	}
-
 	return nodes, nil
 }
 

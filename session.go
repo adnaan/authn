@@ -1,4 +1,4 @@
-package authzen
+package authn
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/adnaan/authzen/models"
-	sessionModel "github.com/adnaan/authzen/models/session"
+	"github.com/adnaan/authn/models"
+	sessionModel "github.com/adnaan/authn/models/session"
 	gContext "github.com/gorilla/context"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"

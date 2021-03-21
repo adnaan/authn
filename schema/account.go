@@ -3,8 +3,6 @@ package schema
 import (
 	"time"
 
-	"github.com/facebook/ent/schema/edge"
-
 	"github.com/facebook/ent/dialect/entsql"
 	"github.com/facebook/ent/schema"
 
@@ -29,11 +27,11 @@ func (Account) Annotations() []schema.Annotation {
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
-		field.String("billing_id").NotEmpty().Unique().Optional(),
 		field.String("provider").NotEmpty(),
 		field.String("email").Unique().NotEmpty(),
 		field.String("password").NotEmpty().Sensitive().MinLen(8),
-		field.String("api_key").NotEmpty().Sensitive().Optional(),
+		field.Bool("locked").Default(false),
+
 		field.Bool("confirmed").Default(false).Optional(),
 		field.Time("confirmation_sent_at").Nillable().Optional(),
 		field.String("confirmation_token").NotEmpty().Optional().Nillable().Unique(),
@@ -47,22 +45,12 @@ func (Account) Fields() []ent.Field {
 		field.Time("email_change_sent_at").Nillable().Optional(),
 		field.String("email_change_token").NotEmpty().Optional().Nillable().Unique(),
 
-		field.JSON("attributes", map[string]interface{}{}),
-		field.Strings("roles").Optional(),
-		field.JSON("teams", map[string]string{}).Optional(),
+		field.JSON("attributes", map[string]interface{}{}).Optional(),
+		field.JSON("sensitive_attributes", map[string]string{}).Optional(),
+		field.Bytes("attribute_bytes").Optional(),
 
 		field.Time("created_at").Immutable().Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 		field.Time("last_signin_at").Nillable().Optional(),
-	}
-}
-
-// Edges of the Account.
-func (Account) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.To("workspace", Workspace.Type).Unique(),
-		edge.To("workspace_roles", WorkspaceRole.Type),
-		edge.To("group_roles", GroupRole.Type),
-		edge.To("account_roles", AccountRole.Type),
 	}
 }

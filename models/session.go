@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/adnaan/authzen/models/session"
+	"github.com/adnaan/authn/models/session"
 	"github.com/facebook/ent/dialect/sql"
 )
 

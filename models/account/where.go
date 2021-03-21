@@ -5,9 +5,8 @@ package account
 import (
 	"time"
 
-	"github.com/adnaan/authzen/models/predicate"
+	"github.com/adnaan/authn/models/predicate"
 	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -94,13 +93,6 @@ func IDLTE(id uuid.UUID) predicate.Account {
 	})
 }
 
-// BillingID applies equality check predicate on the "billing_id" field. It's identical to BillingIDEQ.
-func BillingID(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBillingID), v))
-	})
-}
-
 // Provider applies equality check predicate on the "provider" field. It's identical to ProviderEQ.
 func Provider(v string) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
@@ -122,10 +114,10 @@ func Password(v string) predicate.Account {
 	})
 }
 
-// APIKey applies equality check predicate on the "api_key" field. It's identical to APIKeyEQ.
-func APIKey(v string) predicate.Account {
+// Locked applies equality check predicate on the "locked" field. It's identical to LockedEQ.
+func Locked(v bool) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAPIKey), v))
+		s.Where(sql.EQ(s.C(FieldLocked), v))
 	})
 }
 
@@ -199,6 +191,13 @@ func EmailChangeToken(v string) predicate.Account {
 	})
 }
 
+// AttributeBytes applies equality check predicate on the "attribute_bytes" field. It's identical to AttributeBytesEQ.
+func AttributeBytes(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAttributeBytes), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
@@ -217,131 +216,6 @@ func UpdatedAt(v time.Time) predicate.Account {
 func LastSigninAt(v time.Time) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastSigninAt), v))
-	})
-}
-
-// BillingIDEQ applies the EQ predicate on the "billing_id" field.
-func BillingIDEQ(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDNEQ applies the NEQ predicate on the "billing_id" field.
-func BillingIDNEQ(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDIn applies the In predicate on the "billing_id" field.
-func BillingIDIn(vs ...string) predicate.Account {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Account(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldBillingID), v...))
-	})
-}
-
-// BillingIDNotIn applies the NotIn predicate on the "billing_id" field.
-func BillingIDNotIn(vs ...string) predicate.Account {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Account(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldBillingID), v...))
-	})
-}
-
-// BillingIDGT applies the GT predicate on the "billing_id" field.
-func BillingIDGT(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDGTE applies the GTE predicate on the "billing_id" field.
-func BillingIDGTE(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDLT applies the LT predicate on the "billing_id" field.
-func BillingIDLT(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDLTE applies the LTE predicate on the "billing_id" field.
-func BillingIDLTE(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDContains applies the Contains predicate on the "billing_id" field.
-func BillingIDContains(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDHasPrefix applies the HasPrefix predicate on the "billing_id" field.
-func BillingIDHasPrefix(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDHasSuffix applies the HasSuffix predicate on the "billing_id" field.
-func BillingIDHasSuffix(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDIsNil applies the IsNil predicate on the "billing_id" field.
-func BillingIDIsNil() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBillingID)))
-	})
-}
-
-// BillingIDNotNil applies the NotNil predicate on the "billing_id" field.
-func BillingIDNotNil() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBillingID)))
-	})
-}
-
-// BillingIDEqualFold applies the EqualFold predicate on the "billing_id" field.
-func BillingIDEqualFold(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBillingID), v))
-	})
-}
-
-// BillingIDContainsFold applies the ContainsFold predicate on the "billing_id" field.
-func BillingIDContainsFold(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBillingID), v))
 	})
 }
 
@@ -678,128 +552,17 @@ func PasswordContainsFold(v string) predicate.Account {
 	})
 }
 
-// APIKeyEQ applies the EQ predicate on the "api_key" field.
-func APIKeyEQ(v string) predicate.Account {
+// LockedEQ applies the EQ predicate on the "locked" field.
+func LockedEQ(v bool) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAPIKey), v))
+		s.Where(sql.EQ(s.C(FieldLocked), v))
 	})
 }
 
-// APIKeyNEQ applies the NEQ predicate on the "api_key" field.
-func APIKeyNEQ(v string) predicate.Account {
+// LockedNEQ applies the NEQ predicate on the "locked" field.
+func LockedNEQ(v bool) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyIn applies the In predicate on the "api_key" field.
-func APIKeyIn(vs ...string) predicate.Account {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Account(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldAPIKey), v...))
-	})
-}
-
-// APIKeyNotIn applies the NotIn predicate on the "api_key" field.
-func APIKeyNotIn(vs ...string) predicate.Account {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Account(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldAPIKey), v...))
-	})
-}
-
-// APIKeyGT applies the GT predicate on the "api_key" field.
-func APIKeyGT(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyGTE applies the GTE predicate on the "api_key" field.
-func APIKeyGTE(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyLT applies the LT predicate on the "api_key" field.
-func APIKeyLT(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyLTE applies the LTE predicate on the "api_key" field.
-func APIKeyLTE(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyContains applies the Contains predicate on the "api_key" field.
-func APIKeyContains(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyHasPrefix applies the HasPrefix predicate on the "api_key" field.
-func APIKeyHasPrefix(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyHasSuffix applies the HasSuffix predicate on the "api_key" field.
-func APIKeyHasSuffix(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyIsNil applies the IsNil predicate on the "api_key" field.
-func APIKeyIsNil() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAPIKey)))
-	})
-}
-
-// APIKeyNotNil applies the NotNil predicate on the "api_key" field.
-func APIKeyNotNil() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAPIKey)))
-	})
-}
-
-// APIKeyEqualFold applies the EqualFold predicate on the "api_key" field.
-func APIKeyEqualFold(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAPIKey), v))
-	})
-}
-
-// APIKeyContainsFold applies the ContainsFold predicate on the "api_key" field.
-func APIKeyContainsFold(v string) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAPIKey), v))
+		s.Where(sql.NEQ(s.C(FieldLocked), v))
 	})
 }
 
@@ -1816,31 +1579,121 @@ func EmailChangeTokenContainsFold(v string) predicate.Account {
 	})
 }
 
-// RolesIsNil applies the IsNil predicate on the "roles" field.
-func RolesIsNil() predicate.Account {
+// AttributesIsNil applies the IsNil predicate on the "attributes" field.
+func AttributesIsNil() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRoles)))
+		s.Where(sql.IsNull(s.C(FieldAttributes)))
 	})
 }
 
-// RolesNotNil applies the NotNil predicate on the "roles" field.
-func RolesNotNil() predicate.Account {
+// AttributesNotNil applies the NotNil predicate on the "attributes" field.
+func AttributesNotNil() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRoles)))
+		s.Where(sql.NotNull(s.C(FieldAttributes)))
 	})
 }
 
-// TeamsIsNil applies the IsNil predicate on the "teams" field.
-func TeamsIsNil() predicate.Account {
+// SensitiveAttributesIsNil applies the IsNil predicate on the "sensitive_attributes" field.
+func SensitiveAttributesIsNil() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldTeams)))
+		s.Where(sql.IsNull(s.C(FieldSensitiveAttributes)))
 	})
 }
 
-// TeamsNotNil applies the NotNil predicate on the "teams" field.
-func TeamsNotNil() predicate.Account {
+// SensitiveAttributesNotNil applies the NotNil predicate on the "sensitive_attributes" field.
+func SensitiveAttributesNotNil() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldTeams)))
+		s.Where(sql.NotNull(s.C(FieldSensitiveAttributes)))
+	})
+}
+
+// AttributeBytesEQ applies the EQ predicate on the "attribute_bytes" field.
+func AttributeBytesEQ(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAttributeBytes), v))
+	})
+}
+
+// AttributeBytesNEQ applies the NEQ predicate on the "attribute_bytes" field.
+func AttributeBytesNEQ(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAttributeBytes), v))
+	})
+}
+
+// AttributeBytesIn applies the In predicate on the "attribute_bytes" field.
+func AttributeBytesIn(vs ...[]byte) predicate.Account {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Account(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAttributeBytes), v...))
+	})
+}
+
+// AttributeBytesNotIn applies the NotIn predicate on the "attribute_bytes" field.
+func AttributeBytesNotIn(vs ...[]byte) predicate.Account {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Account(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAttributeBytes), v...))
+	})
+}
+
+// AttributeBytesGT applies the GT predicate on the "attribute_bytes" field.
+func AttributeBytesGT(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAttributeBytes), v))
+	})
+}
+
+// AttributeBytesGTE applies the GTE predicate on the "attribute_bytes" field.
+func AttributeBytesGTE(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAttributeBytes), v))
+	})
+}
+
+// AttributeBytesLT applies the LT predicate on the "attribute_bytes" field.
+func AttributeBytesLT(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAttributeBytes), v))
+	})
+}
+
+// AttributeBytesLTE applies the LTE predicate on the "attribute_bytes" field.
+func AttributeBytesLTE(v []byte) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAttributeBytes), v))
+	})
+}
+
+// AttributeBytesIsNil applies the IsNil predicate on the "attribute_bytes" field.
+func AttributeBytesIsNil() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAttributeBytes)))
+	})
+}
+
+// AttributeBytesNotNil applies the NotNil predicate on the "attribute_bytes" field.
+func AttributeBytesNotNil() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAttributeBytes)))
 	})
 }
 
@@ -2083,118 +1936,6 @@ func LastSigninAtIsNil() predicate.Account {
 func LastSigninAtNotNil() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldLastSigninAt)))
-	})
-}
-
-// HasWorkspace applies the HasEdge predicate on the "workspace" edge.
-func HasWorkspace() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(WorkspaceTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, WorkspaceTable, WorkspaceColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasWorkspaceWith applies the HasEdge predicate on the "workspace" edge with a given conditions (other predicates).
-func HasWorkspaceWith(preds ...predicate.Workspace) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(WorkspaceInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, WorkspaceTable, WorkspaceColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasWorkspaceRoles applies the HasEdge predicate on the "workspace_roles" edge.
-func HasWorkspaceRoles() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(WorkspaceRolesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, WorkspaceRolesTable, WorkspaceRolesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasWorkspaceRolesWith applies the HasEdge predicate on the "workspace_roles" edge with a given conditions (other predicates).
-func HasWorkspaceRolesWith(preds ...predicate.WorkspaceRole) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(WorkspaceRolesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, WorkspaceRolesTable, WorkspaceRolesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasGroupRoles applies the HasEdge predicate on the "group_roles" edge.
-func HasGroupRoles() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(GroupRolesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, GroupRolesTable, GroupRolesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasGroupRolesWith applies the HasEdge predicate on the "group_roles" edge with a given conditions (other predicates).
-func HasGroupRolesWith(preds ...predicate.GroupRole) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(GroupRolesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, GroupRolesTable, GroupRolesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasAccountRoles applies the HasEdge predicate on the "account_roles" edge.
-func HasAccountRoles() predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountRolesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AccountRolesTable, AccountRolesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAccountRolesWith applies the HasEdge predicate on the "account_roles" edge with a given conditions (other predicates).
-func HasAccountRolesWith(preds ...predicate.AccountRole) predicate.Account {
-	return predicate.Account(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountRolesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AccountRolesTable, AccountRolesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

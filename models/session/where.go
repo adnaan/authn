@@ -5,7 +5,7 @@ package session
 import (
 	"time"
 
-	"github.com/adnaan/authzen/models/predicate"
+	"github.com/adnaan/authn/models/predicate"
 	"github.com/facebook/ent/dialect/sql"
 )
 

@@ -7,16 +7,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/adnaan/authzen/models/account"
-	"github.com/adnaan/authzen/models/accountrole"
-	"github.com/adnaan/authzen/models/grouprole"
-	"github.com/adnaan/authzen/models/predicate"
-	"github.com/adnaan/authzen/models/workspace"
-	"github.com/adnaan/authzen/models/workspacerole"
+	"github.com/adnaan/authn/models/account"
+	"github.com/adnaan/authn/models/predicate"
 	"github.com/facebook/ent/dialect/sql"
 	"github.com/facebook/ent/dialect/sql/sqlgraph"
 	"github.com/facebook/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // AccountUpdate is the builder for updating Account entities.
@@ -29,26 +24,6 @@ type AccountUpdate struct {
 // Where adds a new predicate for the builder.
 func (au *AccountUpdate) Where(ps ...predicate.Account) *AccountUpdate {
 	au.mutation.predicates = append(au.mutation.predicates, ps...)
-	return au
-}
-
-// SetBillingID sets the billing_id field.
-func (au *AccountUpdate) SetBillingID(s string) *AccountUpdate {
-	au.mutation.SetBillingID(s)
-	return au
-}
-
-// SetNillableBillingID sets the billing_id field if the given value is not nil.
-func (au *AccountUpdate) SetNillableBillingID(s *string) *AccountUpdate {
-	if s != nil {
-		au.SetBillingID(*s)
-	}
-	return au
-}
-
-// ClearBillingID clears the value of billing_id.
-func (au *AccountUpdate) ClearBillingID() *AccountUpdate {
-	au.mutation.ClearBillingID()
 	return au
 }
 
@@ -70,23 +45,17 @@ func (au *AccountUpdate) SetPassword(s string) *AccountUpdate {
 	return au
 }
 
-// SetAPIKey sets the api_key field.
-func (au *AccountUpdate) SetAPIKey(s string) *AccountUpdate {
-	au.mutation.SetAPIKey(s)
+// SetLocked sets the locked field.
+func (au *AccountUpdate) SetLocked(b bool) *AccountUpdate {
+	au.mutation.SetLocked(b)
 	return au
 }
 
-// SetNillableAPIKey sets the api_key field if the given value is not nil.
-func (au *AccountUpdate) SetNillableAPIKey(s *string) *AccountUpdate {
-	if s != nil {
-		au.SetAPIKey(*s)
+// SetNillableLocked sets the locked field if the given value is not nil.
+func (au *AccountUpdate) SetNillableLocked(b *bool) *AccountUpdate {
+	if b != nil {
+		au.SetLocked(*b)
 	}
-	return au
-}
-
-// ClearAPIKey clears the value of api_key.
-func (au *AccountUpdate) ClearAPIKey() *AccountUpdate {
-	au.mutation.ClearAPIKey()
 	return au
 }
 
@@ -296,27 +265,33 @@ func (au *AccountUpdate) SetAttributes(m map[string]interface{}) *AccountUpdate 
 	return au
 }
 
-// SetRoles sets the roles field.
-func (au *AccountUpdate) SetRoles(s []string) *AccountUpdate {
-	au.mutation.SetRoles(s)
+// ClearAttributes clears the value of attributes.
+func (au *AccountUpdate) ClearAttributes() *AccountUpdate {
+	au.mutation.ClearAttributes()
 	return au
 }
 
-// ClearRoles clears the value of roles.
-func (au *AccountUpdate) ClearRoles() *AccountUpdate {
-	au.mutation.ClearRoles()
+// SetSensitiveAttributes sets the sensitive_attributes field.
+func (au *AccountUpdate) SetSensitiveAttributes(m map[string]string) *AccountUpdate {
+	au.mutation.SetSensitiveAttributes(m)
 	return au
 }
 
-// SetTeams sets the teams field.
-func (au *AccountUpdate) SetTeams(m map[string]string) *AccountUpdate {
-	au.mutation.SetTeams(m)
+// ClearSensitiveAttributes clears the value of sensitive_attributes.
+func (au *AccountUpdate) ClearSensitiveAttributes() *AccountUpdate {
+	au.mutation.ClearSensitiveAttributes()
 	return au
 }
 
-// ClearTeams clears the value of teams.
-func (au *AccountUpdate) ClearTeams() *AccountUpdate {
-	au.mutation.ClearTeams()
+// SetAttributeBytes sets the attribute_bytes field.
+func (au *AccountUpdate) SetAttributeBytes(b []byte) *AccountUpdate {
+	au.mutation.SetAttributeBytes(b)
+	return au
+}
+
+// ClearAttributeBytes clears the value of attribute_bytes.
+func (au *AccountUpdate) ClearAttributeBytes() *AccountUpdate {
+	au.mutation.ClearAttributeBytes()
 	return au
 }
 
@@ -346,142 +321,9 @@ func (au *AccountUpdate) ClearLastSigninAt() *AccountUpdate {
 	return au
 }
 
-// SetWorkspaceID sets the workspace edge to Workspace by id.
-func (au *AccountUpdate) SetWorkspaceID(id uuid.UUID) *AccountUpdate {
-	au.mutation.SetWorkspaceID(id)
-	return au
-}
-
-// SetNillableWorkspaceID sets the workspace edge to Workspace by id if the given value is not nil.
-func (au *AccountUpdate) SetNillableWorkspaceID(id *uuid.UUID) *AccountUpdate {
-	if id != nil {
-		au = au.SetWorkspaceID(*id)
-	}
-	return au
-}
-
-// SetWorkspace sets the workspace edge to Workspace.
-func (au *AccountUpdate) SetWorkspace(w *Workspace) *AccountUpdate {
-	return au.SetWorkspaceID(w.ID)
-}
-
-// AddWorkspaceRoleIDs adds the workspace_roles edge to WorkspaceRole by ids.
-func (au *AccountUpdate) AddWorkspaceRoleIDs(ids ...uuid.UUID) *AccountUpdate {
-	au.mutation.AddWorkspaceRoleIDs(ids...)
-	return au
-}
-
-// AddWorkspaceRoles adds the workspace_roles edges to WorkspaceRole.
-func (au *AccountUpdate) AddWorkspaceRoles(w ...*WorkspaceRole) *AccountUpdate {
-	ids := make([]uuid.UUID, len(w))
-	for i := range w {
-		ids[i] = w[i].ID
-	}
-	return au.AddWorkspaceRoleIDs(ids...)
-}
-
-// AddGroupRoleIDs adds the group_roles edge to GroupRole by ids.
-func (au *AccountUpdate) AddGroupRoleIDs(ids ...uuid.UUID) *AccountUpdate {
-	au.mutation.AddGroupRoleIDs(ids...)
-	return au
-}
-
-// AddGroupRoles adds the group_roles edges to GroupRole.
-func (au *AccountUpdate) AddGroupRoles(g ...*GroupRole) *AccountUpdate {
-	ids := make([]uuid.UUID, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return au.AddGroupRoleIDs(ids...)
-}
-
-// AddAccountRoleIDs adds the account_roles edge to AccountRole by ids.
-func (au *AccountUpdate) AddAccountRoleIDs(ids ...uuid.UUID) *AccountUpdate {
-	au.mutation.AddAccountRoleIDs(ids...)
-	return au
-}
-
-// AddAccountRoles adds the account_roles edges to AccountRole.
-func (au *AccountUpdate) AddAccountRoles(a ...*AccountRole) *AccountUpdate {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.AddAccountRoleIDs(ids...)
-}
-
 // Mutation returns the AccountMutation object of the builder.
 func (au *AccountUpdate) Mutation() *AccountMutation {
 	return au.mutation
-}
-
-// ClearWorkspace clears the "workspace" edge to type Workspace.
-func (au *AccountUpdate) ClearWorkspace() *AccountUpdate {
-	au.mutation.ClearWorkspace()
-	return au
-}
-
-// ClearWorkspaceRoles clears all "workspace_roles" edges to type WorkspaceRole.
-func (au *AccountUpdate) ClearWorkspaceRoles() *AccountUpdate {
-	au.mutation.ClearWorkspaceRoles()
-	return au
-}
-
-// RemoveWorkspaceRoleIDs removes the workspace_roles edge to WorkspaceRole by ids.
-func (au *AccountUpdate) RemoveWorkspaceRoleIDs(ids ...uuid.UUID) *AccountUpdate {
-	au.mutation.RemoveWorkspaceRoleIDs(ids...)
-	return au
-}
-
-// RemoveWorkspaceRoles removes workspace_roles edges to WorkspaceRole.
-func (au *AccountUpdate) RemoveWorkspaceRoles(w ...*WorkspaceRole) *AccountUpdate {
-	ids := make([]uuid.UUID, len(w))
-	for i := range w {
-		ids[i] = w[i].ID
-	}
-	return au.RemoveWorkspaceRoleIDs(ids...)
-}
-
-// ClearGroupRoles clears all "group_roles" edges to type GroupRole.
-func (au *AccountUpdate) ClearGroupRoles() *AccountUpdate {
-	au.mutation.ClearGroupRoles()
-	return au
-}
-
-// RemoveGroupRoleIDs removes the group_roles edge to GroupRole by ids.
-func (au *AccountUpdate) RemoveGroupRoleIDs(ids ...uuid.UUID) *AccountUpdate {
-	au.mutation.RemoveGroupRoleIDs(ids...)
-	return au
-}
-
-// RemoveGroupRoles removes group_roles edges to GroupRole.
-func (au *AccountUpdate) RemoveGroupRoles(g ...*GroupRole) *AccountUpdate {
-	ids := make([]uuid.UUID, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return au.RemoveGroupRoleIDs(ids...)
-}
-
-// ClearAccountRoles clears all "account_roles" edges to type AccountRole.
-func (au *AccountUpdate) ClearAccountRoles() *AccountUpdate {
-	au.mutation.ClearAccountRoles()
-	return au
-}
-
-// RemoveAccountRoleIDs removes the account_roles edge to AccountRole by ids.
-func (au *AccountUpdate) RemoveAccountRoleIDs(ids ...uuid.UUID) *AccountUpdate {
-	au.mutation.RemoveAccountRoleIDs(ids...)
-	return au
-}
-
-// RemoveAccountRoles removes account_roles edges to AccountRole.
-func (au *AccountUpdate) RemoveAccountRoles(a ...*AccountRole) *AccountUpdate {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.RemoveAccountRoleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -552,11 +394,6 @@ func (au *AccountUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *AccountUpdate) check() error {
-	if v, ok := au.mutation.BillingID(); ok {
-		if err := account.BillingIDValidator(v); err != nil {
-			return &ValidationError{Name: "billing_id", err: fmt.Errorf("models: validator failed for field \"billing_id\": %w", err)}
-		}
-	}
 	if v, ok := au.mutation.Provider(); ok {
 		if err := account.ProviderValidator(v); err != nil {
 			return &ValidationError{Name: "provider", err: fmt.Errorf("models: validator failed for field \"provider\": %w", err)}
@@ -570,11 +407,6 @@ func (au *AccountUpdate) check() error {
 	if v, ok := au.mutation.Password(); ok {
 		if err := account.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf("models: validator failed for field \"password\": %w", err)}
-		}
-	}
-	if v, ok := au.mutation.APIKey(); ok {
-		if err := account.APIKeyValidator(v); err != nil {
-			return &ValidationError{Name: "api_key", err: fmt.Errorf("models: validator failed for field \"api_key\": %w", err)}
 		}
 	}
 	if v, ok := au.mutation.ConfirmationToken(); ok {
@@ -623,19 +455,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := au.mutation.BillingID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: account.FieldBillingID,
-		})
-	}
-	if au.mutation.BillingIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: account.FieldBillingID,
-		})
-	}
 	if value, ok := au.mutation.Provider(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -657,17 +476,11 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: account.FieldPassword,
 		})
 	}
-	if value, ok := au.mutation.APIKey(); ok {
+	if value, ok := au.mutation.Locked(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: account.FieldAPIKey,
-		})
-	}
-	if au.mutation.APIKeyCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: account.FieldAPIKey,
+			Column: account.FieldLocked,
 		})
 	}
 	if value, ok := au.mutation.Confirmed(); ok {
@@ -807,30 +620,36 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: account.FieldAttributes,
 		})
 	}
-	if value, ok := au.mutation.Roles(); ok {
+	if au.mutation.AttributesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: account.FieldAttributes,
+		})
+	}
+	if value, ok := au.mutation.SensitiveAttributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: account.FieldRoles,
+			Column: account.FieldSensitiveAttributes,
 		})
 	}
-	if au.mutation.RolesCleared() {
+	if au.mutation.SensitiveAttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: account.FieldRoles,
+			Column: account.FieldSensitiveAttributes,
 		})
 	}
-	if value, ok := au.mutation.Teams(); ok {
+	if value, ok := au.mutation.AttributeBytes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: account.FieldTeams,
+			Column: account.FieldAttributeBytes,
 		})
 	}
-	if au.mutation.TeamsCleared() {
+	if au.mutation.AttributeBytesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: account.FieldTeams,
+			Type:   field.TypeBytes,
+			Column: account.FieldAttributeBytes,
 		})
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
@@ -853,203 +672,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: account.FieldLastSigninAt,
 		})
 	}
-	if au.mutation.WorkspaceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   account.WorkspaceTable,
-			Columns: []string{account.WorkspaceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspace.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.WorkspaceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   account.WorkspaceTable,
-			Columns: []string{account.WorkspaceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspace.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.WorkspaceRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RemovedWorkspaceRolesIDs(); len(nodes) > 0 && !au.mutation.WorkspaceRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.WorkspaceRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.GroupRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RemovedGroupRolesIDs(); len(nodes) > 0 && !au.mutation.GroupRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.GroupRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.AccountRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RemovedAccountRolesIDs(); len(nodes) > 0 && !au.mutation.AccountRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.AccountRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{account.Label}
@@ -1066,26 +688,6 @@ type AccountUpdateOne struct {
 	config
 	hooks    []Hook
 	mutation *AccountMutation
-}
-
-// SetBillingID sets the billing_id field.
-func (auo *AccountUpdateOne) SetBillingID(s string) *AccountUpdateOne {
-	auo.mutation.SetBillingID(s)
-	return auo
-}
-
-// SetNillableBillingID sets the billing_id field if the given value is not nil.
-func (auo *AccountUpdateOne) SetNillableBillingID(s *string) *AccountUpdateOne {
-	if s != nil {
-		auo.SetBillingID(*s)
-	}
-	return auo
-}
-
-// ClearBillingID clears the value of billing_id.
-func (auo *AccountUpdateOne) ClearBillingID() *AccountUpdateOne {
-	auo.mutation.ClearBillingID()
-	return auo
 }
 
 // SetProvider sets the provider field.
@@ -1106,23 +708,17 @@ func (auo *AccountUpdateOne) SetPassword(s string) *AccountUpdateOne {
 	return auo
 }
 
-// SetAPIKey sets the api_key field.
-func (auo *AccountUpdateOne) SetAPIKey(s string) *AccountUpdateOne {
-	auo.mutation.SetAPIKey(s)
+// SetLocked sets the locked field.
+func (auo *AccountUpdateOne) SetLocked(b bool) *AccountUpdateOne {
+	auo.mutation.SetLocked(b)
 	return auo
 }
 
-// SetNillableAPIKey sets the api_key field if the given value is not nil.
-func (auo *AccountUpdateOne) SetNillableAPIKey(s *string) *AccountUpdateOne {
-	if s != nil {
-		auo.SetAPIKey(*s)
+// SetNillableLocked sets the locked field if the given value is not nil.
+func (auo *AccountUpdateOne) SetNillableLocked(b *bool) *AccountUpdateOne {
+	if b != nil {
+		auo.SetLocked(*b)
 	}
-	return auo
-}
-
-// ClearAPIKey clears the value of api_key.
-func (auo *AccountUpdateOne) ClearAPIKey() *AccountUpdateOne {
-	auo.mutation.ClearAPIKey()
 	return auo
 }
 
@@ -1332,27 +928,33 @@ func (auo *AccountUpdateOne) SetAttributes(m map[string]interface{}) *AccountUpd
 	return auo
 }
 
-// SetRoles sets the roles field.
-func (auo *AccountUpdateOne) SetRoles(s []string) *AccountUpdateOne {
-	auo.mutation.SetRoles(s)
+// ClearAttributes clears the value of attributes.
+func (auo *AccountUpdateOne) ClearAttributes() *AccountUpdateOne {
+	auo.mutation.ClearAttributes()
 	return auo
 }
 
-// ClearRoles clears the value of roles.
-func (auo *AccountUpdateOne) ClearRoles() *AccountUpdateOne {
-	auo.mutation.ClearRoles()
+// SetSensitiveAttributes sets the sensitive_attributes field.
+func (auo *AccountUpdateOne) SetSensitiveAttributes(m map[string]string) *AccountUpdateOne {
+	auo.mutation.SetSensitiveAttributes(m)
 	return auo
 }
 
-// SetTeams sets the teams field.
-func (auo *AccountUpdateOne) SetTeams(m map[string]string) *AccountUpdateOne {
-	auo.mutation.SetTeams(m)
+// ClearSensitiveAttributes clears the value of sensitive_attributes.
+func (auo *AccountUpdateOne) ClearSensitiveAttributes() *AccountUpdateOne {
+	auo.mutation.ClearSensitiveAttributes()
 	return auo
 }
 
-// ClearTeams clears the value of teams.
-func (auo *AccountUpdateOne) ClearTeams() *AccountUpdateOne {
-	auo.mutation.ClearTeams()
+// SetAttributeBytes sets the attribute_bytes field.
+func (auo *AccountUpdateOne) SetAttributeBytes(b []byte) *AccountUpdateOne {
+	auo.mutation.SetAttributeBytes(b)
+	return auo
+}
+
+// ClearAttributeBytes clears the value of attribute_bytes.
+func (auo *AccountUpdateOne) ClearAttributeBytes() *AccountUpdateOne {
+	auo.mutation.ClearAttributeBytes()
 	return auo
 }
 
@@ -1382,142 +984,9 @@ func (auo *AccountUpdateOne) ClearLastSigninAt() *AccountUpdateOne {
 	return auo
 }
 
-// SetWorkspaceID sets the workspace edge to Workspace by id.
-func (auo *AccountUpdateOne) SetWorkspaceID(id uuid.UUID) *AccountUpdateOne {
-	auo.mutation.SetWorkspaceID(id)
-	return auo
-}
-
-// SetNillableWorkspaceID sets the workspace edge to Workspace by id if the given value is not nil.
-func (auo *AccountUpdateOne) SetNillableWorkspaceID(id *uuid.UUID) *AccountUpdateOne {
-	if id != nil {
-		auo = auo.SetWorkspaceID(*id)
-	}
-	return auo
-}
-
-// SetWorkspace sets the workspace edge to Workspace.
-func (auo *AccountUpdateOne) SetWorkspace(w *Workspace) *AccountUpdateOne {
-	return auo.SetWorkspaceID(w.ID)
-}
-
-// AddWorkspaceRoleIDs adds the workspace_roles edge to WorkspaceRole by ids.
-func (auo *AccountUpdateOne) AddWorkspaceRoleIDs(ids ...uuid.UUID) *AccountUpdateOne {
-	auo.mutation.AddWorkspaceRoleIDs(ids...)
-	return auo
-}
-
-// AddWorkspaceRoles adds the workspace_roles edges to WorkspaceRole.
-func (auo *AccountUpdateOne) AddWorkspaceRoles(w ...*WorkspaceRole) *AccountUpdateOne {
-	ids := make([]uuid.UUID, len(w))
-	for i := range w {
-		ids[i] = w[i].ID
-	}
-	return auo.AddWorkspaceRoleIDs(ids...)
-}
-
-// AddGroupRoleIDs adds the group_roles edge to GroupRole by ids.
-func (auo *AccountUpdateOne) AddGroupRoleIDs(ids ...uuid.UUID) *AccountUpdateOne {
-	auo.mutation.AddGroupRoleIDs(ids...)
-	return auo
-}
-
-// AddGroupRoles adds the group_roles edges to GroupRole.
-func (auo *AccountUpdateOne) AddGroupRoles(g ...*GroupRole) *AccountUpdateOne {
-	ids := make([]uuid.UUID, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return auo.AddGroupRoleIDs(ids...)
-}
-
-// AddAccountRoleIDs adds the account_roles edge to AccountRole by ids.
-func (auo *AccountUpdateOne) AddAccountRoleIDs(ids ...uuid.UUID) *AccountUpdateOne {
-	auo.mutation.AddAccountRoleIDs(ids...)
-	return auo
-}
-
-// AddAccountRoles adds the account_roles edges to AccountRole.
-func (auo *AccountUpdateOne) AddAccountRoles(a ...*AccountRole) *AccountUpdateOne {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.AddAccountRoleIDs(ids...)
-}
-
 // Mutation returns the AccountMutation object of the builder.
 func (auo *AccountUpdateOne) Mutation() *AccountMutation {
 	return auo.mutation
-}
-
-// ClearWorkspace clears the "workspace" edge to type Workspace.
-func (auo *AccountUpdateOne) ClearWorkspace() *AccountUpdateOne {
-	auo.mutation.ClearWorkspace()
-	return auo
-}
-
-// ClearWorkspaceRoles clears all "workspace_roles" edges to type WorkspaceRole.
-func (auo *AccountUpdateOne) ClearWorkspaceRoles() *AccountUpdateOne {
-	auo.mutation.ClearWorkspaceRoles()
-	return auo
-}
-
-// RemoveWorkspaceRoleIDs removes the workspace_roles edge to WorkspaceRole by ids.
-func (auo *AccountUpdateOne) RemoveWorkspaceRoleIDs(ids ...uuid.UUID) *AccountUpdateOne {
-	auo.mutation.RemoveWorkspaceRoleIDs(ids...)
-	return auo
-}
-
-// RemoveWorkspaceRoles removes workspace_roles edges to WorkspaceRole.
-func (auo *AccountUpdateOne) RemoveWorkspaceRoles(w ...*WorkspaceRole) *AccountUpdateOne {
-	ids := make([]uuid.UUID, len(w))
-	for i := range w {
-		ids[i] = w[i].ID
-	}
-	return auo.RemoveWorkspaceRoleIDs(ids...)
-}
-
-// ClearGroupRoles clears all "group_roles" edges to type GroupRole.
-func (auo *AccountUpdateOne) ClearGroupRoles() *AccountUpdateOne {
-	auo.mutation.ClearGroupRoles()
-	return auo
-}
-
-// RemoveGroupRoleIDs removes the group_roles edge to GroupRole by ids.
-func (auo *AccountUpdateOne) RemoveGroupRoleIDs(ids ...uuid.UUID) *AccountUpdateOne {
-	auo.mutation.RemoveGroupRoleIDs(ids...)
-	return auo
-}
-
-// RemoveGroupRoles removes group_roles edges to GroupRole.
-func (auo *AccountUpdateOne) RemoveGroupRoles(g ...*GroupRole) *AccountUpdateOne {
-	ids := make([]uuid.UUID, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return auo.RemoveGroupRoleIDs(ids...)
-}
-
-// ClearAccountRoles clears all "account_roles" edges to type AccountRole.
-func (auo *AccountUpdateOne) ClearAccountRoles() *AccountUpdateOne {
-	auo.mutation.ClearAccountRoles()
-	return auo
-}
-
-// RemoveAccountRoleIDs removes the account_roles edge to AccountRole by ids.
-func (auo *AccountUpdateOne) RemoveAccountRoleIDs(ids ...uuid.UUID) *AccountUpdateOne {
-	auo.mutation.RemoveAccountRoleIDs(ids...)
-	return auo
-}
-
-// RemoveAccountRoles removes account_roles edges to AccountRole.
-func (auo *AccountUpdateOne) RemoveAccountRoles(a ...*AccountRole) *AccountUpdateOne {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.RemoveAccountRoleIDs(ids...)
 }
 
 // Save executes the query and returns the updated entity.
@@ -1588,11 +1057,6 @@ func (auo *AccountUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *AccountUpdateOne) check() error {
-	if v, ok := auo.mutation.BillingID(); ok {
-		if err := account.BillingIDValidator(v); err != nil {
-			return &ValidationError{Name: "billing_id", err: fmt.Errorf("models: validator failed for field \"billing_id\": %w", err)}
-		}
-	}
 	if v, ok := auo.mutation.Provider(); ok {
 		if err := account.ProviderValidator(v); err != nil {
 			return &ValidationError{Name: "provider", err: fmt.Errorf("models: validator failed for field \"provider\": %w", err)}
@@ -1606,11 +1070,6 @@ func (auo *AccountUpdateOne) check() error {
 	if v, ok := auo.mutation.Password(); ok {
 		if err := account.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf("models: validator failed for field \"password\": %w", err)}
-		}
-	}
-	if v, ok := auo.mutation.APIKey(); ok {
-		if err := account.APIKeyValidator(v); err != nil {
-			return &ValidationError{Name: "api_key", err: fmt.Errorf("models: validator failed for field \"api_key\": %w", err)}
 		}
 	}
 	if v, ok := auo.mutation.ConfirmationToken(); ok {
@@ -1657,19 +1116,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Account.ID for update")}
 	}
 	_spec.Node.ID.Value = id
-	if value, ok := auo.mutation.BillingID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: account.FieldBillingID,
-		})
-	}
-	if auo.mutation.BillingIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: account.FieldBillingID,
-		})
-	}
 	if value, ok := auo.mutation.Provider(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1691,17 +1137,11 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 			Column: account.FieldPassword,
 		})
 	}
-	if value, ok := auo.mutation.APIKey(); ok {
+	if value, ok := auo.mutation.Locked(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: account.FieldAPIKey,
-		})
-	}
-	if auo.mutation.APIKeyCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: account.FieldAPIKey,
+			Column: account.FieldLocked,
 		})
 	}
 	if value, ok := auo.mutation.Confirmed(); ok {
@@ -1841,30 +1281,36 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 			Column: account.FieldAttributes,
 		})
 	}
-	if value, ok := auo.mutation.Roles(); ok {
+	if auo.mutation.AttributesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: account.FieldAttributes,
+		})
+	}
+	if value, ok := auo.mutation.SensitiveAttributes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: account.FieldRoles,
+			Column: account.FieldSensitiveAttributes,
 		})
 	}
-	if auo.mutation.RolesCleared() {
+	if auo.mutation.SensitiveAttributesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: account.FieldRoles,
+			Column: account.FieldSensitiveAttributes,
 		})
 	}
-	if value, ok := auo.mutation.Teams(); ok {
+	if value, ok := auo.mutation.AttributeBytes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: account.FieldTeams,
+			Column: account.FieldAttributeBytes,
 		})
 	}
-	if auo.mutation.TeamsCleared() {
+	if auo.mutation.AttributeBytesCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: account.FieldTeams,
+			Type:   field.TypeBytes,
+			Column: account.FieldAttributeBytes,
 		})
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
@@ -1886,203 +1332,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 			Type:   field.TypeTime,
 			Column: account.FieldLastSigninAt,
 		})
-	}
-	if auo.mutation.WorkspaceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   account.WorkspaceTable,
-			Columns: []string{account.WorkspaceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspace.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.WorkspaceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   account.WorkspaceTable,
-			Columns: []string{account.WorkspaceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspace.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.WorkspaceRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RemovedWorkspaceRolesIDs(); len(nodes) > 0 && !auo.mutation.WorkspaceRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.WorkspaceRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.GroupRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RemovedGroupRolesIDs(); len(nodes) > 0 && !auo.mutation.GroupRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.GroupRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.AccountRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RemovedAccountRolesIDs(); len(nodes) > 0 && !auo.mutation.AccountRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.AccountRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Account{config: auo.config}
 	_spec.Assign = _node.assignValues

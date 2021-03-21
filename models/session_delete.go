@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/adnaan/authzen/models/predicate"
-	"github.com/adnaan/authzen/models/session"
+	"github.com/adnaan/authn/models/predicate"
+	"github.com/adnaan/authn/models/session"
 	"github.com/facebook/ent/dialect/sql"
 	"github.com/facebook/ent/dialect/sql/sqlgraph"
 	"github.com/facebook/ent/schema/field"

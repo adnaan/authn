@@ -8,11 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/adnaan/authzen/models/account"
-	"github.com/adnaan/authzen/models/accountrole"
-	"github.com/adnaan/authzen/models/grouprole"
-	"github.com/adnaan/authzen/models/workspace"
-	"github.com/adnaan/authzen/models/workspacerole"
+	"github.com/adnaan/authn/models/account"
 	"github.com/facebook/ent/dialect/sql/sqlgraph"
 	"github.com/facebook/ent/schema/field"
 	"github.com/google/uuid"
@@ -23,20 +19,6 @@ type AccountCreate struct {
 	config
 	mutation *AccountMutation
 	hooks    []Hook
-}
-
-// SetBillingID sets the billing_id field.
-func (ac *AccountCreate) SetBillingID(s string) *AccountCreate {
-	ac.mutation.SetBillingID(s)
-	return ac
-}
-
-// SetNillableBillingID sets the billing_id field if the given value is not nil.
-func (ac *AccountCreate) SetNillableBillingID(s *string) *AccountCreate {
-	if s != nil {
-		ac.SetBillingID(*s)
-	}
-	return ac
 }
 
 // SetProvider sets the provider field.
@@ -57,16 +39,16 @@ func (ac *AccountCreate) SetPassword(s string) *AccountCreate {
 	return ac
 }
 
-// SetAPIKey sets the api_key field.
-func (ac *AccountCreate) SetAPIKey(s string) *AccountCreate {
-	ac.mutation.SetAPIKey(s)
+// SetLocked sets the locked field.
+func (ac *AccountCreate) SetLocked(b bool) *AccountCreate {
+	ac.mutation.SetLocked(b)
 	return ac
 }
 
-// SetNillableAPIKey sets the api_key field if the given value is not nil.
-func (ac *AccountCreate) SetNillableAPIKey(s *string) *AccountCreate {
-	if s != nil {
-		ac.SetAPIKey(*s)
+// SetNillableLocked sets the locked field if the given value is not nil.
+func (ac *AccountCreate) SetNillableLocked(b *bool) *AccountCreate {
+	if b != nil {
+		ac.SetLocked(*b)
 	}
 	return ac
 }
@@ -217,15 +199,15 @@ func (ac *AccountCreate) SetAttributes(m map[string]interface{}) *AccountCreate 
 	return ac
 }
 
-// SetRoles sets the roles field.
-func (ac *AccountCreate) SetRoles(s []string) *AccountCreate {
-	ac.mutation.SetRoles(s)
+// SetSensitiveAttributes sets the sensitive_attributes field.
+func (ac *AccountCreate) SetSensitiveAttributes(m map[string]string) *AccountCreate {
+	ac.mutation.SetSensitiveAttributes(m)
 	return ac
 }
 
-// SetTeams sets the teams field.
-func (ac *AccountCreate) SetTeams(m map[string]string) *AccountCreate {
-	ac.mutation.SetTeams(m)
+// SetAttributeBytes sets the attribute_bytes field.
+func (ac *AccountCreate) SetAttributeBytes(b []byte) *AccountCreate {
+	ac.mutation.SetAttributeBytes(b)
 	return ac
 }
 
@@ -275,70 +257,6 @@ func (ac *AccountCreate) SetNillableLastSigninAt(t *time.Time) *AccountCreate {
 func (ac *AccountCreate) SetID(u uuid.UUID) *AccountCreate {
 	ac.mutation.SetID(u)
 	return ac
-}
-
-// SetWorkspaceID sets the workspace edge to Workspace by id.
-func (ac *AccountCreate) SetWorkspaceID(id uuid.UUID) *AccountCreate {
-	ac.mutation.SetWorkspaceID(id)
-	return ac
-}
-
-// SetNillableWorkspaceID sets the workspace edge to Workspace by id if the given value is not nil.
-func (ac *AccountCreate) SetNillableWorkspaceID(id *uuid.UUID) *AccountCreate {
-	if id != nil {
-		ac = ac.SetWorkspaceID(*id)
-	}
-	return ac
-}
-
-// SetWorkspace sets the workspace edge to Workspace.
-func (ac *AccountCreate) SetWorkspace(w *Workspace) *AccountCreate {
-	return ac.SetWorkspaceID(w.ID)
-}
-
-// AddWorkspaceRoleIDs adds the workspace_roles edge to WorkspaceRole by ids.
-func (ac *AccountCreate) AddWorkspaceRoleIDs(ids ...uuid.UUID) *AccountCreate {
-	ac.mutation.AddWorkspaceRoleIDs(ids...)
-	return ac
-}
-
-// AddWorkspaceRoles adds the workspace_roles edges to WorkspaceRole.
-func (ac *AccountCreate) AddWorkspaceRoles(w ...*WorkspaceRole) *AccountCreate {
-	ids := make([]uuid.UUID, len(w))
-	for i := range w {
-		ids[i] = w[i].ID
-	}
-	return ac.AddWorkspaceRoleIDs(ids...)
-}
-
-// AddGroupRoleIDs adds the group_roles edge to GroupRole by ids.
-func (ac *AccountCreate) AddGroupRoleIDs(ids ...uuid.UUID) *AccountCreate {
-	ac.mutation.AddGroupRoleIDs(ids...)
-	return ac
-}
-
-// AddGroupRoles adds the group_roles edges to GroupRole.
-func (ac *AccountCreate) AddGroupRoles(g ...*GroupRole) *AccountCreate {
-	ids := make([]uuid.UUID, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return ac.AddGroupRoleIDs(ids...)
-}
-
-// AddAccountRoleIDs adds the account_roles edge to AccountRole by ids.
-func (ac *AccountCreate) AddAccountRoleIDs(ids ...uuid.UUID) *AccountCreate {
-	ac.mutation.AddAccountRoleIDs(ids...)
-	return ac
-}
-
-// AddAccountRoles adds the account_roles edges to AccountRole.
-func (ac *AccountCreate) AddAccountRoles(a ...*AccountRole) *AccountCreate {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return ac.AddAccountRoleIDs(ids...)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -393,6 +311,10 @@ func (ac *AccountCreate) SaveX(ctx context.Context) *Account {
 
 // defaults sets the default values of the builder before save.
 func (ac *AccountCreate) defaults() {
+	if _, ok := ac.mutation.Locked(); !ok {
+		v := account.DefaultLocked
+		ac.mutation.SetLocked(v)
+	}
 	if _, ok := ac.mutation.Confirmed(); !ok {
 		v := account.DefaultConfirmed
 		ac.mutation.SetConfirmed(v)
@@ -413,11 +335,6 @@ func (ac *AccountCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ac *AccountCreate) check() error {
-	if v, ok := ac.mutation.BillingID(); ok {
-		if err := account.BillingIDValidator(v); err != nil {
-			return &ValidationError{Name: "billing_id", err: fmt.Errorf("models: validator failed for field \"billing_id\": %w", err)}
-		}
-	}
 	if _, ok := ac.mutation.Provider(); !ok {
 		return &ValidationError{Name: "provider", err: errors.New("models: missing required field \"provider\"")}
 	}
@@ -442,10 +359,8 @@ func (ac *AccountCreate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf("models: validator failed for field \"password\": %w", err)}
 		}
 	}
-	if v, ok := ac.mutation.APIKey(); ok {
-		if err := account.APIKeyValidator(v); err != nil {
-			return &ValidationError{Name: "api_key", err: fmt.Errorf("models: validator failed for field \"api_key\": %w", err)}
-		}
+	if _, ok := ac.mutation.Locked(); !ok {
+		return &ValidationError{Name: "locked", err: errors.New("models: missing required field \"locked\"")}
 	}
 	if v, ok := ac.mutation.ConfirmationToken(); ok {
 		if err := account.ConfirmationTokenValidator(v); err != nil {
@@ -471,9 +386,6 @@ func (ac *AccountCreate) check() error {
 		if err := account.EmailChangeTokenValidator(v); err != nil {
 			return &ValidationError{Name: "email_change_token", err: fmt.Errorf("models: validator failed for field \"email_change_token\": %w", err)}
 		}
-	}
-	if _, ok := ac.mutation.Attributes(); !ok {
-		return &ValidationError{Name: "attributes", err: errors.New("models: missing required field \"attributes\"")}
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("models: missing required field \"created_at\"")}
@@ -510,14 +422,6 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := ac.mutation.BillingID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: account.FieldBillingID,
-		})
-		_node.BillingID = value
-	}
 	if value, ok := ac.mutation.Provider(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -542,13 +446,13 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		})
 		_node.Password = value
 	}
-	if value, ok := ac.mutation.APIKey(); ok {
+	if value, ok := ac.mutation.Locked(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: account.FieldAPIKey,
+			Column: account.FieldLocked,
 		})
-		_node.APIKey = value
+		_node.Locked = value
 	}
 	if value, ok := ac.mutation.Confirmed(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -638,21 +542,21 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		})
 		_node.Attributes = value
 	}
-	if value, ok := ac.mutation.Roles(); ok {
+	if value, ok := ac.mutation.SensitiveAttributes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: account.FieldRoles,
+			Column: account.FieldSensitiveAttributes,
 		})
-		_node.Roles = value
+		_node.SensitiveAttributes = value
 	}
-	if value, ok := ac.mutation.Teams(); ok {
+	if value, ok := ac.mutation.AttributeBytes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: account.FieldTeams,
+			Column: account.FieldAttributeBytes,
 		})
-		_node.Teams = value
+		_node.AttributeBytes = value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -677,82 +581,6 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 			Column: account.FieldLastSigninAt,
 		})
 		_node.LastSigninAt = &value
-	}
-	if nodes := ac.mutation.WorkspaceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   account.WorkspaceTable,
-			Columns: []string{account.WorkspaceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspace.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.WorkspaceRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.WorkspaceRolesTable,
-			Columns: []string{account.WorkspaceRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: workspacerole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.GroupRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.GroupRolesTable,
-			Columns: []string{account.GroupRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: grouprole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.AccountRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   account.AccountRolesTable,
-			Columns: []string{account.AccountRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: accountrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
