@@ -21,7 +21,6 @@ import (
 
 	"github.com/adnaan/authn/models"
 
-	"github.com/hako/branca"
 	"github.com/markbates/goth"
 )
 
@@ -34,14 +33,13 @@ const (
 )
 
 type Config struct {
-	Driver          string
-	Datasource      string
-	SessionSecret   string
-	SendMail        SendMailFunc
-	APIMasterSecret string
-	SessionMaxAge   int
-	SessionPath     string
-	GothProviders   []goth.Provider
+	Driver        string
+	Datasource    string
+	SessionSecret string
+	SendMail      SendMailFunc
+	SessionMaxAge int
+	SessionPath   string
+	GothProviders []goth.Provider
 }
 
 // hashPassword generates a hashed password from a plaintext string
@@ -56,7 +54,6 @@ func hashPassword(password string) (string, error) {
 
 type API struct {
 	cfg          Config
-	branca       *branca.Branca
 	sessionStore SessionsStore
 
 	// database client
@@ -96,7 +93,7 @@ func New(ctx context.Context, cfg Config) *API {
 		cfg:          cfg,
 		sessionStore: sessionStore,
 		client:       client,
-		branca:       branca.NewBranca(cfg.APIMasterSecret)}
+	}
 }
 
 // Signup a new account with email and password
@@ -459,7 +456,6 @@ func (a *API) CurrentAccount(r *http.Request) (*Account, error) {
 		sessionStore: a.sessionStore,
 		req:          r,
 		client:       a.client,
-		branca:       a.branca,
 	}, nil
 }
 

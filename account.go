@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hako/branca"
-
 	"github.com/markbates/goth/gothic"
 
 	"github.com/adnaan/authn/models"
@@ -20,7 +18,6 @@ type Account struct {
 	cfg          Config
 	sessionStore SessionsStore
 	client       *models.Client
-	branca       *branca.Branca
 }
 
 func (a *API) newAccount(ctx context.Context, email, password string, provider string, attributes map[string]interface{}, sendConfirm bool) (*models.Account, error) {
@@ -144,6 +141,10 @@ func (a *Account) Delete() error {
 	return nil
 }
 
+func (a *Account) Email() string {
+	return a.acc.Email
+}
+
 func (a *Account) Attributes() *Attributes {
 	return &Attributes{
 		req:          a.req,
@@ -153,12 +154,6 @@ func (a *Account) Attributes() *Attributes {
 			req:          a.req,
 			acc:          a.acc,
 			sessionStore: a.sessionStore,
-		},
-		sensitiveAttributes: &SensitiveAttributes{
-			req:          a.req,
-			acc:          a.acc,
-			sessionStore: a.sessionStore,
-			branca:       a.branca,
 		},
 	}
 }
@@ -218,11 +213,10 @@ func (a *SessionAttributes) Del(w http.ResponseWriter, key string) error {
 }
 
 type Attributes struct {
-	req                 *http.Request
-	acc                 *models.Account
-	sessionStore        SessionsStore
-	sessionAttributes   *SessionAttributes
-	sensitiveAttributes *SensitiveAttributes
+	req               *http.Request
+	acc               *models.Account
+	sessionStore      SessionsStore
+	sessionAttributes *SessionAttributes
 }
 
 // Get gets an attribute from the database for the account
@@ -314,55 +308,4 @@ func (a *Attributes) DelBytes() error {
 
 func (a *Attributes) Session() *SessionAttributes {
 	return a.sessionAttributes
-}
-
-func (a *Attributes) Sensitive() *SensitiveAttributes {
-	return a.sensitiveAttributes
-}
-
-// SensitiveAttributes provides get, set, del methods for sensitive attributes for an account
-type SensitiveAttributes struct {
-	req          *http.Request
-	acc          *models.Account
-	sessionStore SessionsStore
-	branca       *branca.Branca
-}
-
-// Get gets a sensitive attribute from the database for the account
-// It uses https://github.com/hako/branca to encode/decode strings
-func (a *SensitiveAttributes) Get(key string) (string, error) {
-	v, ok := a.acc.SensitiveAttributes[key]
-	if !ok {
-		return "", fmt.Errorf("%w", ErrAttributeNotFound)
-	}
-	return a.branca.DecodeToString(v)
-}
-
-// Set stores a sensitive attribute in the database for the account
-// It uses https://github.com/hako/branca to encode/decode strings
-func (a *SensitiveAttributes) Set(key string, val string) error {
-	currentAttributes := a.acc.SensitiveAttributes
-	valx, err := a.branca.EncodeToString(val)
-	if err != nil {
-		return fmt.Errorf("%v %w", err, ErrInternal)
-	}
-	currentAttributes[key] = valx
-
-	err = a.acc.Update().SetSensitiveAttributes(currentAttributes).Exec(a.req.Context())
-	if err != nil {
-		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
-	}
-	return nil
-}
-
-// Del deletes a sensitive attribute from the database for the account
-func (a *SensitiveAttributes) Del(key string) error {
-	currentAttributes := a.acc.SensitiveAttributes
-	delete(currentAttributes, key)
-
-	err := a.acc.Update().SetSensitiveAttributes(currentAttributes).Exec(a.req.Context())
-	if err != nil {
-		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
-	}
-	return nil
 }
