@@ -27,10 +27,20 @@ import (
 const defaultMaxAge = 60 * 60 * 24 * 30 // 30 days
 const defaultPath = "/"
 const (
+	// AccountIDKey IsAuthenticated stores the account id in request context using this key. Used in AccountIDFromContext
+	AccountIDKey    = "key_account_id"
 	formContentType = "application/x-www-form-urlencoded"
-	CtxUserIdKey    = "key_user_id"
 	sessionStoreKey = "auth"
 )
+
+// AccountIDFromContext retrieves the account id stored by IsAuthenticated Middleware
+func AccountIDFromContext(r *http.Request) string {
+	val, ok := r.Context().Value(AccountIDKey).(string)
+	if !ok {
+		return ""
+	}
+	return val
+}
 
 type Config struct {
 	Driver        string
@@ -490,7 +500,7 @@ func (a *API) IsAuthenticated(next http.Handler) http.Handler {
 			}
 		} else {
 			ctx := r.Context()
-			ctx = context.WithValue(ctx, CtxUserIdKey, id)
+			ctx = context.WithValue(ctx, AccountIDKey, id)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		}
 	})
