@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/adnaan/authn/models/session"
-	"github.com/facebook/ent/dialect/sql"
 )
 
 // Session is the model entity for the Session schema.
@@ -27,61 +27,74 @@ type Session struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Session) scanValues() []interface{} {
-	return []interface{}{
-		&sql.NullString{}, // id
-		&sql.NullString{}, // data
-		&sql.NullTime{},   // created_at
-		&sql.NullTime{},   // updated_at
-		&sql.NullTime{},   // expires_at
+func (*Session) scanValues(columns []string) ([]interface{}, error) {
+	values := make([]interface{}, len(columns))
+	for i := range columns {
+		switch columns[i] {
+		case session.FieldID, session.FieldData:
+			values[i] = &sql.NullString{}
+		case session.FieldCreatedAt, session.FieldUpdatedAt, session.FieldExpiresAt:
+			values[i] = &sql.NullTime{}
+		default:
+			return nil, fmt.Errorf("unexpected column %q for type Session", columns[i])
+		}
 	}
+	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Session fields.
-func (s *Session) assignValues(values ...interface{}) error {
-	if m, n := len(values), len(session.Columns); m < n {
+func (s *Session) assignValues(columns []string, values []interface{}) error {
+	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
-	if value, ok := values[0].(*sql.NullString); !ok {
-		return fmt.Errorf("unexpected type %T for field id", values[0])
-	} else if value.Valid {
-		s.ID = value.String
-	}
-	values = values[1:]
-	if value, ok := values[0].(*sql.NullString); !ok {
-		return fmt.Errorf("unexpected type %T for field data", values[0])
-	} else if value.Valid {
-		s.Data = value.String
-	}
-	if value, ok := values[1].(*sql.NullTime); !ok {
-		return fmt.Errorf("unexpected type %T for field created_at", values[1])
-	} else if value.Valid {
-		s.CreatedAt = value.Time
-	}
-	if value, ok := values[2].(*sql.NullTime); !ok {
-		return fmt.Errorf("unexpected type %T for field updated_at", values[2])
-	} else if value.Valid {
-		s.UpdatedAt = value.Time
-	}
-	if value, ok := values[3].(*sql.NullTime); !ok {
-		return fmt.Errorf("unexpected type %T for field expires_at", values[3])
-	} else if value.Valid {
-		s.ExpiresAt = new(time.Time)
-		*s.ExpiresAt = value.Time
+	for i := range columns {
+		switch columns[i] {
+		case session.FieldID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				s.ID = value.String
+			}
+		case session.FieldData:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field data", values[i])
+			} else if value.Valid {
+				s.Data = value.String
+			}
+		case session.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				s.CreatedAt = value.Time
+			}
+		case session.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				s.UpdatedAt = value.Time
+			}
+		case session.FieldExpiresAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
+			} else if value.Valid {
+				s.ExpiresAt = new(time.Time)
+				*s.ExpiresAt = value.Time
+			}
+		}
 	}
 	return nil
 }
 
 // Update returns a builder for updating this Session.
-// Note that, you need to call Session.Unwrap() before calling this method, if this Session
+// Note that you need to call Session.Unwrap() before calling this method if this Session
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (s *Session) Update() *SessionUpdateOne {
 	return (&SessionClient{config: s.config}).UpdateOne(s)
 }
 
-// Unwrap unwraps the entity that was returned from a transaction after it was closed,
-// so that all next queries will be executed through the driver which created the transaction.
+// Unwrap unwraps the Session entity that was returned from a transaction after it was closed,
+// so that all future queries will be executed through the driver which created the transaction.
 func (s *Session) Unwrap() *Session {
 	tx, ok := s.config.driver.(*txDriver)
 	if !ok {

@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/account"
 	"github.com/adnaan/authn/models/predicate"
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 )
 
 // AccountUpdate is the builder for updating Account entities.
@@ -21,37 +21,37 @@ type AccountUpdate struct {
 	mutation *AccountMutation
 }
 
-// Where adds a new predicate for the builder.
+// Where adds a new predicate for the AccountUpdate builder.
 func (au *AccountUpdate) Where(ps ...predicate.Account) *AccountUpdate {
 	au.mutation.predicates = append(au.mutation.predicates, ps...)
 	return au
 }
 
-// SetProvider sets the provider field.
+// SetProvider sets the "provider" field.
 func (au *AccountUpdate) SetProvider(s string) *AccountUpdate {
 	au.mutation.SetProvider(s)
 	return au
 }
 
-// SetEmail sets the email field.
+// SetEmail sets the "email" field.
 func (au *AccountUpdate) SetEmail(s string) *AccountUpdate {
 	au.mutation.SetEmail(s)
 	return au
 }
 
-// SetPassword sets the password field.
+// SetPassword sets the "password" field.
 func (au *AccountUpdate) SetPassword(s string) *AccountUpdate {
 	au.mutation.SetPassword(s)
 	return au
 }
 
-// SetLocked sets the locked field.
+// SetLocked sets the "locked" field.
 func (au *AccountUpdate) SetLocked(b bool) *AccountUpdate {
 	au.mutation.SetLocked(b)
 	return au
 }
 
-// SetNillableLocked sets the locked field if the given value is not nil.
+// SetNillableLocked sets the "locked" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableLocked(b *bool) *AccountUpdate {
 	if b != nil {
 		au.SetLocked(*b)
@@ -59,13 +59,13 @@ func (au *AccountUpdate) SetNillableLocked(b *bool) *AccountUpdate {
 	return au
 }
 
-// SetConfirmed sets the confirmed field.
+// SetConfirmed sets the "confirmed" field.
 func (au *AccountUpdate) SetConfirmed(b bool) *AccountUpdate {
 	au.mutation.SetConfirmed(b)
 	return au
 }
 
-// SetNillableConfirmed sets the confirmed field if the given value is not nil.
+// SetNillableConfirmed sets the "confirmed" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableConfirmed(b *bool) *AccountUpdate {
 	if b != nil {
 		au.SetConfirmed(*b)
@@ -73,19 +73,19 @@ func (au *AccountUpdate) SetNillableConfirmed(b *bool) *AccountUpdate {
 	return au
 }
 
-// ClearConfirmed clears the value of confirmed.
+// ClearConfirmed clears the value of the "confirmed" field.
 func (au *AccountUpdate) ClearConfirmed() *AccountUpdate {
 	au.mutation.ClearConfirmed()
 	return au
 }
 
-// SetConfirmationSentAt sets the confirmation_sent_at field.
+// SetConfirmationSentAt sets the "confirmation_sent_at" field.
 func (au *AccountUpdate) SetConfirmationSentAt(t time.Time) *AccountUpdate {
 	au.mutation.SetConfirmationSentAt(t)
 	return au
 }
 
-// SetNillableConfirmationSentAt sets the confirmation_sent_at field if the given value is not nil.
+// SetNillableConfirmationSentAt sets the "confirmation_sent_at" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableConfirmationSentAt(t *time.Time) *AccountUpdate {
 	if t != nil {
 		au.SetConfirmationSentAt(*t)
@@ -93,19 +93,19 @@ func (au *AccountUpdate) SetNillableConfirmationSentAt(t *time.Time) *AccountUpd
 	return au
 }
 
-// ClearConfirmationSentAt clears the value of confirmation_sent_at.
+// ClearConfirmationSentAt clears the value of the "confirmation_sent_at" field.
 func (au *AccountUpdate) ClearConfirmationSentAt() *AccountUpdate {
 	au.mutation.ClearConfirmationSentAt()
 	return au
 }
 
-// SetConfirmationToken sets the confirmation_token field.
+// SetConfirmationToken sets the "confirmation_token" field.
 func (au *AccountUpdate) SetConfirmationToken(s string) *AccountUpdate {
 	au.mutation.SetConfirmationToken(s)
 	return au
 }
 
-// SetNillableConfirmationToken sets the confirmation_token field if the given value is not nil.
+// SetNillableConfirmationToken sets the "confirmation_token" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableConfirmationToken(s *string) *AccountUpdate {
 	if s != nil {
 		au.SetConfirmationToken(*s)
@@ -113,19 +113,19 @@ func (au *AccountUpdate) SetNillableConfirmationToken(s *string) *AccountUpdate 
 	return au
 }
 
-// ClearConfirmationToken clears the value of confirmation_token.
+// ClearConfirmationToken clears the value of the "confirmation_token" field.
 func (au *AccountUpdate) ClearConfirmationToken() *AccountUpdate {
 	au.mutation.ClearConfirmationToken()
 	return au
 }
 
-// SetRecoverySentAt sets the recovery_sent_at field.
+// SetRecoverySentAt sets the "recovery_sent_at" field.
 func (au *AccountUpdate) SetRecoverySentAt(t time.Time) *AccountUpdate {
 	au.mutation.SetRecoverySentAt(t)
 	return au
 }
 
-// SetNillableRecoverySentAt sets the recovery_sent_at field if the given value is not nil.
+// SetNillableRecoverySentAt sets the "recovery_sent_at" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableRecoverySentAt(t *time.Time) *AccountUpdate {
 	if t != nil {
 		au.SetRecoverySentAt(*t)
@@ -133,19 +133,19 @@ func (au *AccountUpdate) SetNillableRecoverySentAt(t *time.Time) *AccountUpdate 
 	return au
 }
 
-// ClearRecoverySentAt clears the value of recovery_sent_at.
+// ClearRecoverySentAt clears the value of the "recovery_sent_at" field.
 func (au *AccountUpdate) ClearRecoverySentAt() *AccountUpdate {
 	au.mutation.ClearRecoverySentAt()
 	return au
 }
 
-// SetRecoveryToken sets the recovery_token field.
+// SetRecoveryToken sets the "recovery_token" field.
 func (au *AccountUpdate) SetRecoveryToken(s string) *AccountUpdate {
 	au.mutation.SetRecoveryToken(s)
 	return au
 }
 
-// SetNillableRecoveryToken sets the recovery_token field if the given value is not nil.
+// SetNillableRecoveryToken sets the "recovery_token" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableRecoveryToken(s *string) *AccountUpdate {
 	if s != nil {
 		au.SetRecoveryToken(*s)
@@ -153,19 +153,19 @@ func (au *AccountUpdate) SetNillableRecoveryToken(s *string) *AccountUpdate {
 	return au
 }
 
-// ClearRecoveryToken clears the value of recovery_token.
+// ClearRecoveryToken clears the value of the "recovery_token" field.
 func (au *AccountUpdate) ClearRecoveryToken() *AccountUpdate {
 	au.mutation.ClearRecoveryToken()
 	return au
 }
 
-// SetOtpSentAt sets the otp_sent_at field.
+// SetOtpSentAt sets the "otp_sent_at" field.
 func (au *AccountUpdate) SetOtpSentAt(t time.Time) *AccountUpdate {
 	au.mutation.SetOtpSentAt(t)
 	return au
 }
 
-// SetNillableOtpSentAt sets the otp_sent_at field if the given value is not nil.
+// SetNillableOtpSentAt sets the "otp_sent_at" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableOtpSentAt(t *time.Time) *AccountUpdate {
 	if t != nil {
 		au.SetOtpSentAt(*t)
@@ -173,19 +173,19 @@ func (au *AccountUpdate) SetNillableOtpSentAt(t *time.Time) *AccountUpdate {
 	return au
 }
 
-// ClearOtpSentAt clears the value of otp_sent_at.
+// ClearOtpSentAt clears the value of the "otp_sent_at" field.
 func (au *AccountUpdate) ClearOtpSentAt() *AccountUpdate {
 	au.mutation.ClearOtpSentAt()
 	return au
 }
 
-// SetOtp sets the otp field.
+// SetOtp sets the "otp" field.
 func (au *AccountUpdate) SetOtp(s string) *AccountUpdate {
 	au.mutation.SetOtp(s)
 	return au
 }
 
-// SetNillableOtp sets the otp field if the given value is not nil.
+// SetNillableOtp sets the "otp" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableOtp(s *string) *AccountUpdate {
 	if s != nil {
 		au.SetOtp(*s)
@@ -193,19 +193,19 @@ func (au *AccountUpdate) SetNillableOtp(s *string) *AccountUpdate {
 	return au
 }
 
-// ClearOtp clears the value of otp.
+// ClearOtp clears the value of the "otp" field.
 func (au *AccountUpdate) ClearOtp() *AccountUpdate {
 	au.mutation.ClearOtp()
 	return au
 }
 
-// SetEmailChange sets the email_change field.
+// SetEmailChange sets the "email_change" field.
 func (au *AccountUpdate) SetEmailChange(s string) *AccountUpdate {
 	au.mutation.SetEmailChange(s)
 	return au
 }
 
-// SetNillableEmailChange sets the email_change field if the given value is not nil.
+// SetNillableEmailChange sets the "email_change" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableEmailChange(s *string) *AccountUpdate {
 	if s != nil {
 		au.SetEmailChange(*s)
@@ -213,19 +213,19 @@ func (au *AccountUpdate) SetNillableEmailChange(s *string) *AccountUpdate {
 	return au
 }
 
-// ClearEmailChange clears the value of email_change.
+// ClearEmailChange clears the value of the "email_change" field.
 func (au *AccountUpdate) ClearEmailChange() *AccountUpdate {
 	au.mutation.ClearEmailChange()
 	return au
 }
 
-// SetEmailChangeSentAt sets the email_change_sent_at field.
+// SetEmailChangeSentAt sets the "email_change_sent_at" field.
 func (au *AccountUpdate) SetEmailChangeSentAt(t time.Time) *AccountUpdate {
 	au.mutation.SetEmailChangeSentAt(t)
 	return au
 }
 
-// SetNillableEmailChangeSentAt sets the email_change_sent_at field if the given value is not nil.
+// SetNillableEmailChangeSentAt sets the "email_change_sent_at" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableEmailChangeSentAt(t *time.Time) *AccountUpdate {
 	if t != nil {
 		au.SetEmailChangeSentAt(*t)
@@ -233,19 +233,19 @@ func (au *AccountUpdate) SetNillableEmailChangeSentAt(t *time.Time) *AccountUpda
 	return au
 }
 
-// ClearEmailChangeSentAt clears the value of email_change_sent_at.
+// ClearEmailChangeSentAt clears the value of the "email_change_sent_at" field.
 func (au *AccountUpdate) ClearEmailChangeSentAt() *AccountUpdate {
 	au.mutation.ClearEmailChangeSentAt()
 	return au
 }
 
-// SetEmailChangeToken sets the email_change_token field.
+// SetEmailChangeToken sets the "email_change_token" field.
 func (au *AccountUpdate) SetEmailChangeToken(s string) *AccountUpdate {
 	au.mutation.SetEmailChangeToken(s)
 	return au
 }
 
-// SetNillableEmailChangeToken sets the email_change_token field if the given value is not nil.
+// SetNillableEmailChangeToken sets the "email_change_token" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableEmailChangeToken(s *string) *AccountUpdate {
 	if s != nil {
 		au.SetEmailChangeToken(*s)
@@ -253,61 +253,61 @@ func (au *AccountUpdate) SetNillableEmailChangeToken(s *string) *AccountUpdate {
 	return au
 }
 
-// ClearEmailChangeToken clears the value of email_change_token.
+// ClearEmailChangeToken clears the value of the "email_change_token" field.
 func (au *AccountUpdate) ClearEmailChangeToken() *AccountUpdate {
 	au.mutation.ClearEmailChangeToken()
 	return au
 }
 
-// SetAttributes sets the attributes field.
+// SetAttributes sets the "attributes" field.
 func (au *AccountUpdate) SetAttributes(m map[string]interface{}) *AccountUpdate {
 	au.mutation.SetAttributes(m)
 	return au
 }
 
-// ClearAttributes clears the value of attributes.
+// ClearAttributes clears the value of the "attributes" field.
 func (au *AccountUpdate) ClearAttributes() *AccountUpdate {
 	au.mutation.ClearAttributes()
 	return au
 }
 
-// SetSensitiveAttributes sets the sensitive_attributes field.
+// SetSensitiveAttributes sets the "sensitive_attributes" field.
 func (au *AccountUpdate) SetSensitiveAttributes(m map[string]string) *AccountUpdate {
 	au.mutation.SetSensitiveAttributes(m)
 	return au
 }
 
-// ClearSensitiveAttributes clears the value of sensitive_attributes.
+// ClearSensitiveAttributes clears the value of the "sensitive_attributes" field.
 func (au *AccountUpdate) ClearSensitiveAttributes() *AccountUpdate {
 	au.mutation.ClearSensitiveAttributes()
 	return au
 }
 
-// SetAttributeBytes sets the attribute_bytes field.
+// SetAttributeBytes sets the "attribute_bytes" field.
 func (au *AccountUpdate) SetAttributeBytes(b []byte) *AccountUpdate {
 	au.mutation.SetAttributeBytes(b)
 	return au
 }
 
-// ClearAttributeBytes clears the value of attribute_bytes.
+// ClearAttributeBytes clears the value of the "attribute_bytes" field.
 func (au *AccountUpdate) ClearAttributeBytes() *AccountUpdate {
 	au.mutation.ClearAttributeBytes()
 	return au
 }
 
-// SetUpdatedAt sets the updated_at field.
+// SetUpdatedAt sets the "updated_at" field.
 func (au *AccountUpdate) SetUpdatedAt(t time.Time) *AccountUpdate {
 	au.mutation.SetUpdatedAt(t)
 	return au
 }
 
-// SetLastSigninAt sets the last_signin_at field.
+// SetLastSigninAt sets the "last_signin_at" field.
 func (au *AccountUpdate) SetLastSigninAt(t time.Time) *AccountUpdate {
 	au.mutation.SetLastSigninAt(t)
 	return au
 }
 
-// SetNillableLastSigninAt sets the last_signin_at field if the given value is not nil.
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
 func (au *AccountUpdate) SetNillableLastSigninAt(t *time.Time) *AccountUpdate {
 	if t != nil {
 		au.SetLastSigninAt(*t)
@@ -315,7 +315,7 @@ func (au *AccountUpdate) SetNillableLastSigninAt(t *time.Time) *AccountUpdate {
 	return au
 }
 
-// ClearLastSigninAt clears the value of last_signin_at.
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
 func (au *AccountUpdate) ClearLastSigninAt() *AccountUpdate {
 	au.mutation.ClearLastSigninAt()
 	return au
@@ -690,31 +690,31 @@ type AccountUpdateOne struct {
 	mutation *AccountMutation
 }
 
-// SetProvider sets the provider field.
+// SetProvider sets the "provider" field.
 func (auo *AccountUpdateOne) SetProvider(s string) *AccountUpdateOne {
 	auo.mutation.SetProvider(s)
 	return auo
 }
 
-// SetEmail sets the email field.
+// SetEmail sets the "email" field.
 func (auo *AccountUpdateOne) SetEmail(s string) *AccountUpdateOne {
 	auo.mutation.SetEmail(s)
 	return auo
 }
 
-// SetPassword sets the password field.
+// SetPassword sets the "password" field.
 func (auo *AccountUpdateOne) SetPassword(s string) *AccountUpdateOne {
 	auo.mutation.SetPassword(s)
 	return auo
 }
 
-// SetLocked sets the locked field.
+// SetLocked sets the "locked" field.
 func (auo *AccountUpdateOne) SetLocked(b bool) *AccountUpdateOne {
 	auo.mutation.SetLocked(b)
 	return auo
 }
 
-// SetNillableLocked sets the locked field if the given value is not nil.
+// SetNillableLocked sets the "locked" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableLocked(b *bool) *AccountUpdateOne {
 	if b != nil {
 		auo.SetLocked(*b)
@@ -722,13 +722,13 @@ func (auo *AccountUpdateOne) SetNillableLocked(b *bool) *AccountUpdateOne {
 	return auo
 }
 
-// SetConfirmed sets the confirmed field.
+// SetConfirmed sets the "confirmed" field.
 func (auo *AccountUpdateOne) SetConfirmed(b bool) *AccountUpdateOne {
 	auo.mutation.SetConfirmed(b)
 	return auo
 }
 
-// SetNillableConfirmed sets the confirmed field if the given value is not nil.
+// SetNillableConfirmed sets the "confirmed" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableConfirmed(b *bool) *AccountUpdateOne {
 	if b != nil {
 		auo.SetConfirmed(*b)
@@ -736,19 +736,19 @@ func (auo *AccountUpdateOne) SetNillableConfirmed(b *bool) *AccountUpdateOne {
 	return auo
 }
 
-// ClearConfirmed clears the value of confirmed.
+// ClearConfirmed clears the value of the "confirmed" field.
 func (auo *AccountUpdateOne) ClearConfirmed() *AccountUpdateOne {
 	auo.mutation.ClearConfirmed()
 	return auo
 }
 
-// SetConfirmationSentAt sets the confirmation_sent_at field.
+// SetConfirmationSentAt sets the "confirmation_sent_at" field.
 func (auo *AccountUpdateOne) SetConfirmationSentAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetConfirmationSentAt(t)
 	return auo
 }
 
-// SetNillableConfirmationSentAt sets the confirmation_sent_at field if the given value is not nil.
+// SetNillableConfirmationSentAt sets the "confirmation_sent_at" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableConfirmationSentAt(t *time.Time) *AccountUpdateOne {
 	if t != nil {
 		auo.SetConfirmationSentAt(*t)
@@ -756,19 +756,19 @@ func (auo *AccountUpdateOne) SetNillableConfirmationSentAt(t *time.Time) *Accoun
 	return auo
 }
 
-// ClearConfirmationSentAt clears the value of confirmation_sent_at.
+// ClearConfirmationSentAt clears the value of the "confirmation_sent_at" field.
 func (auo *AccountUpdateOne) ClearConfirmationSentAt() *AccountUpdateOne {
 	auo.mutation.ClearConfirmationSentAt()
 	return auo
 }
 
-// SetConfirmationToken sets the confirmation_token field.
+// SetConfirmationToken sets the "confirmation_token" field.
 func (auo *AccountUpdateOne) SetConfirmationToken(s string) *AccountUpdateOne {
 	auo.mutation.SetConfirmationToken(s)
 	return auo
 }
 
-// SetNillableConfirmationToken sets the confirmation_token field if the given value is not nil.
+// SetNillableConfirmationToken sets the "confirmation_token" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableConfirmationToken(s *string) *AccountUpdateOne {
 	if s != nil {
 		auo.SetConfirmationToken(*s)
@@ -776,19 +776,19 @@ func (auo *AccountUpdateOne) SetNillableConfirmationToken(s *string) *AccountUpd
 	return auo
 }
 
-// ClearConfirmationToken clears the value of confirmation_token.
+// ClearConfirmationToken clears the value of the "confirmation_token" field.
 func (auo *AccountUpdateOne) ClearConfirmationToken() *AccountUpdateOne {
 	auo.mutation.ClearConfirmationToken()
 	return auo
 }
 
-// SetRecoverySentAt sets the recovery_sent_at field.
+// SetRecoverySentAt sets the "recovery_sent_at" field.
 func (auo *AccountUpdateOne) SetRecoverySentAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetRecoverySentAt(t)
 	return auo
 }
 
-// SetNillableRecoverySentAt sets the recovery_sent_at field if the given value is not nil.
+// SetNillableRecoverySentAt sets the "recovery_sent_at" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableRecoverySentAt(t *time.Time) *AccountUpdateOne {
 	if t != nil {
 		auo.SetRecoverySentAt(*t)
@@ -796,19 +796,19 @@ func (auo *AccountUpdateOne) SetNillableRecoverySentAt(t *time.Time) *AccountUpd
 	return auo
 }
 
-// ClearRecoverySentAt clears the value of recovery_sent_at.
+// ClearRecoverySentAt clears the value of the "recovery_sent_at" field.
 func (auo *AccountUpdateOne) ClearRecoverySentAt() *AccountUpdateOne {
 	auo.mutation.ClearRecoverySentAt()
 	return auo
 }
 
-// SetRecoveryToken sets the recovery_token field.
+// SetRecoveryToken sets the "recovery_token" field.
 func (auo *AccountUpdateOne) SetRecoveryToken(s string) *AccountUpdateOne {
 	auo.mutation.SetRecoveryToken(s)
 	return auo
 }
 
-// SetNillableRecoveryToken sets the recovery_token field if the given value is not nil.
+// SetNillableRecoveryToken sets the "recovery_token" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableRecoveryToken(s *string) *AccountUpdateOne {
 	if s != nil {
 		auo.SetRecoveryToken(*s)
@@ -816,19 +816,19 @@ func (auo *AccountUpdateOne) SetNillableRecoveryToken(s *string) *AccountUpdateO
 	return auo
 }
 
-// ClearRecoveryToken clears the value of recovery_token.
+// ClearRecoveryToken clears the value of the "recovery_token" field.
 func (auo *AccountUpdateOne) ClearRecoveryToken() *AccountUpdateOne {
 	auo.mutation.ClearRecoveryToken()
 	return auo
 }
 
-// SetOtpSentAt sets the otp_sent_at field.
+// SetOtpSentAt sets the "otp_sent_at" field.
 func (auo *AccountUpdateOne) SetOtpSentAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetOtpSentAt(t)
 	return auo
 }
 
-// SetNillableOtpSentAt sets the otp_sent_at field if the given value is not nil.
+// SetNillableOtpSentAt sets the "otp_sent_at" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableOtpSentAt(t *time.Time) *AccountUpdateOne {
 	if t != nil {
 		auo.SetOtpSentAt(*t)
@@ -836,19 +836,19 @@ func (auo *AccountUpdateOne) SetNillableOtpSentAt(t *time.Time) *AccountUpdateOn
 	return auo
 }
 
-// ClearOtpSentAt clears the value of otp_sent_at.
+// ClearOtpSentAt clears the value of the "otp_sent_at" field.
 func (auo *AccountUpdateOne) ClearOtpSentAt() *AccountUpdateOne {
 	auo.mutation.ClearOtpSentAt()
 	return auo
 }
 
-// SetOtp sets the otp field.
+// SetOtp sets the "otp" field.
 func (auo *AccountUpdateOne) SetOtp(s string) *AccountUpdateOne {
 	auo.mutation.SetOtp(s)
 	return auo
 }
 
-// SetNillableOtp sets the otp field if the given value is not nil.
+// SetNillableOtp sets the "otp" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableOtp(s *string) *AccountUpdateOne {
 	if s != nil {
 		auo.SetOtp(*s)
@@ -856,19 +856,19 @@ func (auo *AccountUpdateOne) SetNillableOtp(s *string) *AccountUpdateOne {
 	return auo
 }
 
-// ClearOtp clears the value of otp.
+// ClearOtp clears the value of the "otp" field.
 func (auo *AccountUpdateOne) ClearOtp() *AccountUpdateOne {
 	auo.mutation.ClearOtp()
 	return auo
 }
 
-// SetEmailChange sets the email_change field.
+// SetEmailChange sets the "email_change" field.
 func (auo *AccountUpdateOne) SetEmailChange(s string) *AccountUpdateOne {
 	auo.mutation.SetEmailChange(s)
 	return auo
 }
 
-// SetNillableEmailChange sets the email_change field if the given value is not nil.
+// SetNillableEmailChange sets the "email_change" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableEmailChange(s *string) *AccountUpdateOne {
 	if s != nil {
 		auo.SetEmailChange(*s)
@@ -876,19 +876,19 @@ func (auo *AccountUpdateOne) SetNillableEmailChange(s *string) *AccountUpdateOne
 	return auo
 }
 
-// ClearEmailChange clears the value of email_change.
+// ClearEmailChange clears the value of the "email_change" field.
 func (auo *AccountUpdateOne) ClearEmailChange() *AccountUpdateOne {
 	auo.mutation.ClearEmailChange()
 	return auo
 }
 
-// SetEmailChangeSentAt sets the email_change_sent_at field.
+// SetEmailChangeSentAt sets the "email_change_sent_at" field.
 func (auo *AccountUpdateOne) SetEmailChangeSentAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetEmailChangeSentAt(t)
 	return auo
 }
 
-// SetNillableEmailChangeSentAt sets the email_change_sent_at field if the given value is not nil.
+// SetNillableEmailChangeSentAt sets the "email_change_sent_at" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableEmailChangeSentAt(t *time.Time) *AccountUpdateOne {
 	if t != nil {
 		auo.SetEmailChangeSentAt(*t)
@@ -896,19 +896,19 @@ func (auo *AccountUpdateOne) SetNillableEmailChangeSentAt(t *time.Time) *Account
 	return auo
 }
 
-// ClearEmailChangeSentAt clears the value of email_change_sent_at.
+// ClearEmailChangeSentAt clears the value of the "email_change_sent_at" field.
 func (auo *AccountUpdateOne) ClearEmailChangeSentAt() *AccountUpdateOne {
 	auo.mutation.ClearEmailChangeSentAt()
 	return auo
 }
 
-// SetEmailChangeToken sets the email_change_token field.
+// SetEmailChangeToken sets the "email_change_token" field.
 func (auo *AccountUpdateOne) SetEmailChangeToken(s string) *AccountUpdateOne {
 	auo.mutation.SetEmailChangeToken(s)
 	return auo
 }
 
-// SetNillableEmailChangeToken sets the email_change_token field if the given value is not nil.
+// SetNillableEmailChangeToken sets the "email_change_token" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableEmailChangeToken(s *string) *AccountUpdateOne {
 	if s != nil {
 		auo.SetEmailChangeToken(*s)
@@ -916,61 +916,61 @@ func (auo *AccountUpdateOne) SetNillableEmailChangeToken(s *string) *AccountUpda
 	return auo
 }
 
-// ClearEmailChangeToken clears the value of email_change_token.
+// ClearEmailChangeToken clears the value of the "email_change_token" field.
 func (auo *AccountUpdateOne) ClearEmailChangeToken() *AccountUpdateOne {
 	auo.mutation.ClearEmailChangeToken()
 	return auo
 }
 
-// SetAttributes sets the attributes field.
+// SetAttributes sets the "attributes" field.
 func (auo *AccountUpdateOne) SetAttributes(m map[string]interface{}) *AccountUpdateOne {
 	auo.mutation.SetAttributes(m)
 	return auo
 }
 
-// ClearAttributes clears the value of attributes.
+// ClearAttributes clears the value of the "attributes" field.
 func (auo *AccountUpdateOne) ClearAttributes() *AccountUpdateOne {
 	auo.mutation.ClearAttributes()
 	return auo
 }
 
-// SetSensitiveAttributes sets the sensitive_attributes field.
+// SetSensitiveAttributes sets the "sensitive_attributes" field.
 func (auo *AccountUpdateOne) SetSensitiveAttributes(m map[string]string) *AccountUpdateOne {
 	auo.mutation.SetSensitiveAttributes(m)
 	return auo
 }
 
-// ClearSensitiveAttributes clears the value of sensitive_attributes.
+// ClearSensitiveAttributes clears the value of the "sensitive_attributes" field.
 func (auo *AccountUpdateOne) ClearSensitiveAttributes() *AccountUpdateOne {
 	auo.mutation.ClearSensitiveAttributes()
 	return auo
 }
 
-// SetAttributeBytes sets the attribute_bytes field.
+// SetAttributeBytes sets the "attribute_bytes" field.
 func (auo *AccountUpdateOne) SetAttributeBytes(b []byte) *AccountUpdateOne {
 	auo.mutation.SetAttributeBytes(b)
 	return auo
 }
 
-// ClearAttributeBytes clears the value of attribute_bytes.
+// ClearAttributeBytes clears the value of the "attribute_bytes" field.
 func (auo *AccountUpdateOne) ClearAttributeBytes() *AccountUpdateOne {
 	auo.mutation.ClearAttributeBytes()
 	return auo
 }
 
-// SetUpdatedAt sets the updated_at field.
+// SetUpdatedAt sets the "updated_at" field.
 func (auo *AccountUpdateOne) SetUpdatedAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetUpdatedAt(t)
 	return auo
 }
 
-// SetLastSigninAt sets the last_signin_at field.
+// SetLastSigninAt sets the "last_signin_at" field.
 func (auo *AccountUpdateOne) SetLastSigninAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetLastSigninAt(t)
 	return auo
 }
 
-// SetNillableLastSigninAt sets the last_signin_at field if the given value is not nil.
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
 func (auo *AccountUpdateOne) SetNillableLastSigninAt(t *time.Time) *AccountUpdateOne {
 	if t != nil {
 		auo.SetLastSigninAt(*t)
@@ -978,7 +978,7 @@ func (auo *AccountUpdateOne) SetNillableLastSigninAt(t *time.Time) *AccountUpdat
 	return auo
 }
 
-// ClearLastSigninAt clears the value of last_signin_at.
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
 func (auo *AccountUpdateOne) ClearLastSigninAt() *AccountUpdateOne {
 	auo.mutation.ClearLastSigninAt()
 	return auo
@@ -989,7 +989,7 @@ func (auo *AccountUpdateOne) Mutation() *AccountMutation {
 	return auo.mutation
 }
 
-// Save executes the query and returns the updated entity.
+// Save executes the query and returns the updated Account entity.
 func (auo *AccountUpdateOne) Save(ctx context.Context) (*Account, error) {
 	var (
 		err  error
@@ -1116,6 +1116,13 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Account.ID for update")}
 	}
 	_spec.Node.ID.Value = id
+	if ps := auo.mutation.predicates; len(ps) > 0 {
+		_spec.Predicate = func(selector *sql.Selector) {
+			for i := range ps {
+				ps[i](selector)
+			}
+		}
+	}
 	if value, ok := auo.mutation.Provider(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1335,7 +1342,7 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	}
 	_node = &Account{config: auo.config}
 	_spec.Assign = _node.assignValues
-	_spec.ScanValues = _node.scanValues()
+	_spec.ScanValues = _node.scanValues
 	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{account.Label}

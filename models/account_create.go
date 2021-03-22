@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/account"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 	"github.com/google/uuid"
 )
 
@@ -21,31 +21,31 @@ type AccountCreate struct {
 	hooks    []Hook
 }
 
-// SetProvider sets the provider field.
+// SetProvider sets the "provider" field.
 func (ac *AccountCreate) SetProvider(s string) *AccountCreate {
 	ac.mutation.SetProvider(s)
 	return ac
 }
 
-// SetEmail sets the email field.
+// SetEmail sets the "email" field.
 func (ac *AccountCreate) SetEmail(s string) *AccountCreate {
 	ac.mutation.SetEmail(s)
 	return ac
 }
 
-// SetPassword sets the password field.
+// SetPassword sets the "password" field.
 func (ac *AccountCreate) SetPassword(s string) *AccountCreate {
 	ac.mutation.SetPassword(s)
 	return ac
 }
 
-// SetLocked sets the locked field.
+// SetLocked sets the "locked" field.
 func (ac *AccountCreate) SetLocked(b bool) *AccountCreate {
 	ac.mutation.SetLocked(b)
 	return ac
 }
 
-// SetNillableLocked sets the locked field if the given value is not nil.
+// SetNillableLocked sets the "locked" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableLocked(b *bool) *AccountCreate {
 	if b != nil {
 		ac.SetLocked(*b)
@@ -53,13 +53,13 @@ func (ac *AccountCreate) SetNillableLocked(b *bool) *AccountCreate {
 	return ac
 }
 
-// SetConfirmed sets the confirmed field.
+// SetConfirmed sets the "confirmed" field.
 func (ac *AccountCreate) SetConfirmed(b bool) *AccountCreate {
 	ac.mutation.SetConfirmed(b)
 	return ac
 }
 
-// SetNillableConfirmed sets the confirmed field if the given value is not nil.
+// SetNillableConfirmed sets the "confirmed" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableConfirmed(b *bool) *AccountCreate {
 	if b != nil {
 		ac.SetConfirmed(*b)
@@ -67,13 +67,13 @@ func (ac *AccountCreate) SetNillableConfirmed(b *bool) *AccountCreate {
 	return ac
 }
 
-// SetConfirmationSentAt sets the confirmation_sent_at field.
+// SetConfirmationSentAt sets the "confirmation_sent_at" field.
 func (ac *AccountCreate) SetConfirmationSentAt(t time.Time) *AccountCreate {
 	ac.mutation.SetConfirmationSentAt(t)
 	return ac
 }
 
-// SetNillableConfirmationSentAt sets the confirmation_sent_at field if the given value is not nil.
+// SetNillableConfirmationSentAt sets the "confirmation_sent_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableConfirmationSentAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetConfirmationSentAt(*t)
@@ -81,13 +81,13 @@ func (ac *AccountCreate) SetNillableConfirmationSentAt(t *time.Time) *AccountCre
 	return ac
 }
 
-// SetConfirmationToken sets the confirmation_token field.
+// SetConfirmationToken sets the "confirmation_token" field.
 func (ac *AccountCreate) SetConfirmationToken(s string) *AccountCreate {
 	ac.mutation.SetConfirmationToken(s)
 	return ac
 }
 
-// SetNillableConfirmationToken sets the confirmation_token field if the given value is not nil.
+// SetNillableConfirmationToken sets the "confirmation_token" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableConfirmationToken(s *string) *AccountCreate {
 	if s != nil {
 		ac.SetConfirmationToken(*s)
@@ -95,13 +95,13 @@ func (ac *AccountCreate) SetNillableConfirmationToken(s *string) *AccountCreate 
 	return ac
 }
 
-// SetRecoverySentAt sets the recovery_sent_at field.
+// SetRecoverySentAt sets the "recovery_sent_at" field.
 func (ac *AccountCreate) SetRecoverySentAt(t time.Time) *AccountCreate {
 	ac.mutation.SetRecoverySentAt(t)
 	return ac
 }
 
-// SetNillableRecoverySentAt sets the recovery_sent_at field if the given value is not nil.
+// SetNillableRecoverySentAt sets the "recovery_sent_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableRecoverySentAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetRecoverySentAt(*t)
@@ -109,13 +109,13 @@ func (ac *AccountCreate) SetNillableRecoverySentAt(t *time.Time) *AccountCreate 
 	return ac
 }
 
-// SetRecoveryToken sets the recovery_token field.
+// SetRecoveryToken sets the "recovery_token" field.
 func (ac *AccountCreate) SetRecoveryToken(s string) *AccountCreate {
 	ac.mutation.SetRecoveryToken(s)
 	return ac
 }
 
-// SetNillableRecoveryToken sets the recovery_token field if the given value is not nil.
+// SetNillableRecoveryToken sets the "recovery_token" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableRecoveryToken(s *string) *AccountCreate {
 	if s != nil {
 		ac.SetRecoveryToken(*s)
@@ -123,13 +123,13 @@ func (ac *AccountCreate) SetNillableRecoveryToken(s *string) *AccountCreate {
 	return ac
 }
 
-// SetOtpSentAt sets the otp_sent_at field.
+// SetOtpSentAt sets the "otp_sent_at" field.
 func (ac *AccountCreate) SetOtpSentAt(t time.Time) *AccountCreate {
 	ac.mutation.SetOtpSentAt(t)
 	return ac
 }
 
-// SetNillableOtpSentAt sets the otp_sent_at field if the given value is not nil.
+// SetNillableOtpSentAt sets the "otp_sent_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableOtpSentAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetOtpSentAt(*t)
@@ -137,13 +137,13 @@ func (ac *AccountCreate) SetNillableOtpSentAt(t *time.Time) *AccountCreate {
 	return ac
 }
 
-// SetOtp sets the otp field.
+// SetOtp sets the "otp" field.
 func (ac *AccountCreate) SetOtp(s string) *AccountCreate {
 	ac.mutation.SetOtp(s)
 	return ac
 }
 
-// SetNillableOtp sets the otp field if the given value is not nil.
+// SetNillableOtp sets the "otp" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableOtp(s *string) *AccountCreate {
 	if s != nil {
 		ac.SetOtp(*s)
@@ -151,13 +151,13 @@ func (ac *AccountCreate) SetNillableOtp(s *string) *AccountCreate {
 	return ac
 }
 
-// SetEmailChange sets the email_change field.
+// SetEmailChange sets the "email_change" field.
 func (ac *AccountCreate) SetEmailChange(s string) *AccountCreate {
 	ac.mutation.SetEmailChange(s)
 	return ac
 }
 
-// SetNillableEmailChange sets the email_change field if the given value is not nil.
+// SetNillableEmailChange sets the "email_change" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableEmailChange(s *string) *AccountCreate {
 	if s != nil {
 		ac.SetEmailChange(*s)
@@ -165,13 +165,13 @@ func (ac *AccountCreate) SetNillableEmailChange(s *string) *AccountCreate {
 	return ac
 }
 
-// SetEmailChangeSentAt sets the email_change_sent_at field.
+// SetEmailChangeSentAt sets the "email_change_sent_at" field.
 func (ac *AccountCreate) SetEmailChangeSentAt(t time.Time) *AccountCreate {
 	ac.mutation.SetEmailChangeSentAt(t)
 	return ac
 }
 
-// SetNillableEmailChangeSentAt sets the email_change_sent_at field if the given value is not nil.
+// SetNillableEmailChangeSentAt sets the "email_change_sent_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableEmailChangeSentAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetEmailChangeSentAt(*t)
@@ -179,13 +179,13 @@ func (ac *AccountCreate) SetNillableEmailChangeSentAt(t *time.Time) *AccountCrea
 	return ac
 }
 
-// SetEmailChangeToken sets the email_change_token field.
+// SetEmailChangeToken sets the "email_change_token" field.
 func (ac *AccountCreate) SetEmailChangeToken(s string) *AccountCreate {
 	ac.mutation.SetEmailChangeToken(s)
 	return ac
 }
 
-// SetNillableEmailChangeToken sets the email_change_token field if the given value is not nil.
+// SetNillableEmailChangeToken sets the "email_change_token" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableEmailChangeToken(s *string) *AccountCreate {
 	if s != nil {
 		ac.SetEmailChangeToken(*s)
@@ -193,31 +193,31 @@ func (ac *AccountCreate) SetNillableEmailChangeToken(s *string) *AccountCreate {
 	return ac
 }
 
-// SetAttributes sets the attributes field.
+// SetAttributes sets the "attributes" field.
 func (ac *AccountCreate) SetAttributes(m map[string]interface{}) *AccountCreate {
 	ac.mutation.SetAttributes(m)
 	return ac
 }
 
-// SetSensitiveAttributes sets the sensitive_attributes field.
+// SetSensitiveAttributes sets the "sensitive_attributes" field.
 func (ac *AccountCreate) SetSensitiveAttributes(m map[string]string) *AccountCreate {
 	ac.mutation.SetSensitiveAttributes(m)
 	return ac
 }
 
-// SetAttributeBytes sets the attribute_bytes field.
+// SetAttributeBytes sets the "attribute_bytes" field.
 func (ac *AccountCreate) SetAttributeBytes(b []byte) *AccountCreate {
 	ac.mutation.SetAttributeBytes(b)
 	return ac
 }
 
-// SetCreatedAt sets the created_at field.
+// SetCreatedAt sets the "created_at" field.
 func (ac *AccountCreate) SetCreatedAt(t time.Time) *AccountCreate {
 	ac.mutation.SetCreatedAt(t)
 	return ac
 }
 
-// SetNillableCreatedAt sets the created_at field if the given value is not nil.
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableCreatedAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetCreatedAt(*t)
@@ -225,13 +225,13 @@ func (ac *AccountCreate) SetNillableCreatedAt(t *time.Time) *AccountCreate {
 	return ac
 }
 
-// SetUpdatedAt sets the updated_at field.
+// SetUpdatedAt sets the "updated_at" field.
 func (ac *AccountCreate) SetUpdatedAt(t time.Time) *AccountCreate {
 	ac.mutation.SetUpdatedAt(t)
 	return ac
 }
 
-// SetNillableUpdatedAt sets the updated_at field if the given value is not nil.
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableUpdatedAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetUpdatedAt(*t)
@@ -239,13 +239,13 @@ func (ac *AccountCreate) SetNillableUpdatedAt(t *time.Time) *AccountCreate {
 	return ac
 }
 
-// SetLastSigninAt sets the last_signin_at field.
+// SetLastSigninAt sets the "last_signin_at" field.
 func (ac *AccountCreate) SetLastSigninAt(t time.Time) *AccountCreate {
 	ac.mutation.SetLastSigninAt(t)
 	return ac
 }
 
-// SetNillableLastSigninAt sets the last_signin_at field if the given value is not nil.
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
 func (ac *AccountCreate) SetNillableLastSigninAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetLastSigninAt(*t)
@@ -253,7 +253,7 @@ func (ac *AccountCreate) SetNillableLastSigninAt(t *time.Time) *AccountCreate {
 	return ac
 }
 
-// SetID sets the id field.
+// SetID sets the "id" field.
 func (ac *AccountCreate) SetID(u uuid.UUID) *AccountCreate {
 	ac.mutation.SetID(u)
 	return ac
@@ -585,7 +585,7 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// AccountCreateBulk is the builder for creating a bulk of Account entities.
+// AccountCreateBulk is the builder for creating many Account entities in bulk.
 type AccountCreateBulk struct {
 	config
 	builders []*AccountCreate
@@ -641,7 +641,7 @@ func (acb *AccountCreateBulk) Save(ctx context.Context) ([]*Account, error) {
 	return nodes, nil
 }
 
-// SaveX calls Save and panics if Save returns an error.
+// SaveX is like Save, but panics if an error occurs.
 func (acb *AccountCreateBulk) SaveX(ctx context.Context) []*Account {
 	v, err := acb.Save(ctx)
 	if err != nil {

@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/session"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 )
 
 // SessionCreate is the builder for creating a Session entity.
@@ -20,19 +20,19 @@ type SessionCreate struct {
 	hooks    []Hook
 }
 
-// SetData sets the data field.
+// SetData sets the "data" field.
 func (sc *SessionCreate) SetData(s string) *SessionCreate {
 	sc.mutation.SetData(s)
 	return sc
 }
 
-// SetCreatedAt sets the created_at field.
+// SetCreatedAt sets the "created_at" field.
 func (sc *SessionCreate) SetCreatedAt(t time.Time) *SessionCreate {
 	sc.mutation.SetCreatedAt(t)
 	return sc
 }
 
-// SetNillableCreatedAt sets the created_at field if the given value is not nil.
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
 func (sc *SessionCreate) SetNillableCreatedAt(t *time.Time) *SessionCreate {
 	if t != nil {
 		sc.SetCreatedAt(*t)
@@ -40,13 +40,13 @@ func (sc *SessionCreate) SetNillableCreatedAt(t *time.Time) *SessionCreate {
 	return sc
 }
 
-// SetUpdatedAt sets the updated_at field.
+// SetUpdatedAt sets the "updated_at" field.
 func (sc *SessionCreate) SetUpdatedAt(t time.Time) *SessionCreate {
 	sc.mutation.SetUpdatedAt(t)
 	return sc
 }
 
-// SetNillableUpdatedAt sets the updated_at field if the given value is not nil.
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
 func (sc *SessionCreate) SetNillableUpdatedAt(t *time.Time) *SessionCreate {
 	if t != nil {
 		sc.SetUpdatedAt(*t)
@@ -54,13 +54,13 @@ func (sc *SessionCreate) SetNillableUpdatedAt(t *time.Time) *SessionCreate {
 	return sc
 }
 
-// SetExpiresAt sets the expires_at field.
+// SetExpiresAt sets the "expires_at" field.
 func (sc *SessionCreate) SetExpiresAt(t time.Time) *SessionCreate {
 	sc.mutation.SetExpiresAt(t)
 	return sc
 }
 
-// SetNillableExpiresAt sets the expires_at field if the given value is not nil.
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
 func (sc *SessionCreate) SetNillableExpiresAt(t *time.Time) *SessionCreate {
 	if t != nil {
 		sc.SetExpiresAt(*t)
@@ -68,7 +68,7 @@ func (sc *SessionCreate) SetNillableExpiresAt(t *time.Time) *SessionCreate {
 	return sc
 }
 
-// SetID sets the id field.
+// SetID sets the "id" field.
 func (sc *SessionCreate) SetID(s string) *SessionCreate {
 	sc.mutation.SetID(s)
 	return sc
@@ -211,7 +211,7 @@ func (sc *SessionCreate) createSpec() (*Session, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// SessionCreateBulk is the builder for creating a bulk of Session entities.
+// SessionCreateBulk is the builder for creating many Session entities in bulk.
 type SessionCreateBulk struct {
 	config
 	builders []*SessionCreate
@@ -267,7 +267,7 @@ func (scb *SessionCreateBulk) Save(ctx context.Context) ([]*Session, error) {
 	return nodes, nil
 }
 
-// SaveX calls Save and panics if Save returns an error.
+// SaveX is like Save, but panics if an error occurs.
 func (scb *SessionCreateBulk) SaveX(ctx context.Context) []*Session {
 	v, err := scb.Save(ctx)
 	if err != nil {

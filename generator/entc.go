@@ -5,9 +5,9 @@ package main
 import (
 	"log"
 
-	"github.com/facebook/ent/entc"
-	"github.com/facebook/ent/entc/gen"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/entc"
+	"entgo.io/ent/entc/gen"
+	"entgo.io/ent/schema/field"
 )
 
 func main() {

@@ -5,15 +5,14 @@ package models
 import (
 	"errors"
 	"fmt"
-	"strings"
 
-	"github.com/facebook/ent"
-	"github.com/facebook/ent/dialect"
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
-// ent aliases to avoid import conflict in user's code.
+// ent aliases to avoid import conflicts in user's code.
 type (
 	Op         = ent.Op
 	Hook       = ent.Hook
@@ -238,30 +237,16 @@ func IsConstraintError(err error) bool {
 }
 
 func isSQLConstraintError(err error) (*ConstraintError, bool) {
-	var (
-		msg = err.Error()
-		// error format per dialect.
-		errors = [...]string{
-			"Error 1062",               // MySQL 1062 error (ER_DUP_ENTRY).
-			"UNIQUE constraint failed", // SQLite.
-			"duplicate key value violates unique constraint", // PostgreSQL.
-		}
-	)
-	if _, ok := err.(*sqlgraph.ConstraintError); ok {
-		return &ConstraintError{msg, err}, true
-	}
-	for i := range errors {
-		if strings.Contains(msg, errors[i]) {
-			return &ConstraintError{msg, err}, true
-		}
+	if sqlgraph.IsConstraintError(err) {
+		return &ConstraintError{err.Error(), err}, true
 	}
 	return nil, false
 }
 
-// rollback calls to tx.Rollback and wraps the given error with the rollback error if occurred.
+// rollback calls tx.Rollback and wraps the given error with the rollback error if present.
 func rollback(tx dialect.Tx, err error) error {
 	if rerr := tx.Rollback(); rerr != nil {
-		err = fmt.Errorf("%s: %v", err.Error(), rerr)
+		err = fmt.Errorf("%w: %v", err, rerr)
 	}
 	if err, ok := isSQLConstraintError(err); ok {
 		return err

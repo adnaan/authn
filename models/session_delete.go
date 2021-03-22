@@ -6,11 +6,11 @@ import (
 	"context"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/predicate"
 	"github.com/adnaan/authn/models/session"
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 )
 
 // SessionDelete is the builder for deleting a Session entity.
@@ -20,7 +20,7 @@ type SessionDelete struct {
 	mutation *SessionMutation
 }
 
-// Where adds a new predicate to the delete builder.
+// Where adds a new predicate to the SessionDelete builder.
 func (sd *SessionDelete) Where(ps ...predicate.Session) *SessionDelete {
 	sd.mutation.predicates = append(sd.mutation.predicates, ps...)
 	return sd

@@ -3,9 +3,9 @@ module github.com/adnaan/authn
 go 1.16
 
 require (
-	github.com/facebook/ent v0.5.3
+	entgo.io/ent v0.7.0
 	github.com/fatih/structs v1.1.0
-	github.com/google/uuid v1.1.4
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1

@@ -1,5 +1,5 @@
 package models
 
-import _ "github.com/facebook/ent/entc"
+import _ "entgo.io/ent/entc"
 
 //go:generate go run entc.go

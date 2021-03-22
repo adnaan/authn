@@ -53,7 +53,6 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldLastSigninAt holds the string denoting the last_signin_at field in the database.
 	FieldLastSigninAt = "last_signin_at"
-
 	// Table holds the table name of the account in the database.
 	Table = "accounts"
 )
@@ -100,9 +99,9 @@ var (
 	EmailValidator func(string) error
 	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	PasswordValidator func(string) error
-	// DefaultLocked holds the default value on creation for the locked field.
+	// DefaultLocked holds the default value on creation for the "locked" field.
 	DefaultLocked bool
-	// DefaultConfirmed holds the default value on creation for the confirmed field.
+	// DefaultConfirmed holds the default value on creation for the "confirmed" field.
 	DefaultConfirmed bool
 	// ConfirmationTokenValidator is a validator for the "confirmation_token" field. It is called by the builders before save.
 	ConfirmationTokenValidator func(string) error
@@ -114,12 +113,12 @@ var (
 	EmailChangeValidator func(string) error
 	// EmailChangeTokenValidator is a validator for the "email_change_token" field. It is called by the builders before save.
 	EmailChangeTokenValidator func(string) error
-	// DefaultCreatedAt holds the default value on creation for the created_at field.
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultID holds the default value on creation for the id field.
+	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

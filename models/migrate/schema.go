@@ -3,9 +3,9 @@
 package migrate
 
 import (
-	"github.com/facebook/ent/dialect/entsql"
-	"github.com/facebook/ent/dialect/sql/schema"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/dialect/sql/schema"
+	"entgo.io/ent/schema/field"
 )
 
 var (
@@ -15,8 +15,8 @@ var (
 		{Name: "provider", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
-		{Name: "locked", Type: field.TypeBool},
-		{Name: "confirmed", Type: field.TypeBool, Nullable: true},
+		{Name: "locked", Type: field.TypeBool, Default: false},
+		{Name: "confirmed", Type: field.TypeBool, Nullable: true, Default: false},
 		{Name: "confirmation_sent_at", Type: field.TypeTime, Nullable: true},
 		{Name: "confirmation_token", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "recovery_sent_at", Type: field.TypeTime, Nullable: true},
@@ -39,7 +39,6 @@ var (
 		Columns:     AccountsColumns,
 		PrimaryKey:  []*schema.Column{AccountsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
-		Annotation:  &entsql.Annotation{Table: "accounts"},
 	}
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
@@ -55,7 +54,6 @@ var (
 		Columns:     SessionsColumns,
 		PrimaryKey:  []*schema.Column{SessionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
-		Annotation:  &entsql.Annotation{Table: "sessions"},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -65,4 +63,10 @@ var (
 )
 
 func init() {
+	AccountsTable.Annotation = &entsql.Annotation{
+		Table: "accounts",
+	}
+	SessionsTable.Annotation = &entsql.Annotation{
+		Table: "sessions",
+	}
 }

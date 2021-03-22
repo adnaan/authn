@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/predicate"
 	"github.com/adnaan/authn/models/session"
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 )
 
 // SessionUpdate is the builder for updating Session entities.
@@ -21,31 +21,31 @@ type SessionUpdate struct {
 	mutation *SessionMutation
 }
 
-// Where adds a new predicate for the builder.
+// Where adds a new predicate for the SessionUpdate builder.
 func (su *SessionUpdate) Where(ps ...predicate.Session) *SessionUpdate {
 	su.mutation.predicates = append(su.mutation.predicates, ps...)
 	return su
 }
 
-// SetData sets the data field.
+// SetData sets the "data" field.
 func (su *SessionUpdate) SetData(s string) *SessionUpdate {
 	su.mutation.SetData(s)
 	return su
 }
 
-// SetUpdatedAt sets the updated_at field.
+// SetUpdatedAt sets the "updated_at" field.
 func (su *SessionUpdate) SetUpdatedAt(t time.Time) *SessionUpdate {
 	su.mutation.SetUpdatedAt(t)
 	return su
 }
 
-// SetExpiresAt sets the expires_at field.
+// SetExpiresAt sets the "expires_at" field.
 func (su *SessionUpdate) SetExpiresAt(t time.Time) *SessionUpdate {
 	su.mutation.SetExpiresAt(t)
 	return su
 }
 
-// SetNillableExpiresAt sets the expires_at field if the given value is not nil.
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
 func (su *SessionUpdate) SetNillableExpiresAt(t *time.Time) *SessionUpdate {
 	if t != nil {
 		su.SetExpiresAt(*t)
@@ -53,7 +53,7 @@ func (su *SessionUpdate) SetNillableExpiresAt(t *time.Time) *SessionUpdate {
 	return su
 }
 
-// ClearExpiresAt clears the value of expires_at.
+// ClearExpiresAt clears the value of the "expires_at" field.
 func (su *SessionUpdate) ClearExpiresAt() *SessionUpdate {
 	su.mutation.ClearExpiresAt()
 	return su
@@ -187,25 +187,25 @@ type SessionUpdateOne struct {
 	mutation *SessionMutation
 }
 
-// SetData sets the data field.
+// SetData sets the "data" field.
 func (suo *SessionUpdateOne) SetData(s string) *SessionUpdateOne {
 	suo.mutation.SetData(s)
 	return suo
 }
 
-// SetUpdatedAt sets the updated_at field.
+// SetUpdatedAt sets the "updated_at" field.
 func (suo *SessionUpdateOne) SetUpdatedAt(t time.Time) *SessionUpdateOne {
 	suo.mutation.SetUpdatedAt(t)
 	return suo
 }
 
-// SetExpiresAt sets the expires_at field.
+// SetExpiresAt sets the "expires_at" field.
 func (suo *SessionUpdateOne) SetExpiresAt(t time.Time) *SessionUpdateOne {
 	suo.mutation.SetExpiresAt(t)
 	return suo
 }
 
-// SetNillableExpiresAt sets the expires_at field if the given value is not nil.
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
 func (suo *SessionUpdateOne) SetNillableExpiresAt(t *time.Time) *SessionUpdateOne {
 	if t != nil {
 		suo.SetExpiresAt(*t)
@@ -213,7 +213,7 @@ func (suo *SessionUpdateOne) SetNillableExpiresAt(t *time.Time) *SessionUpdateOn
 	return suo
 }
 
-// ClearExpiresAt clears the value of expires_at.
+// ClearExpiresAt clears the value of the "expires_at" field.
 func (suo *SessionUpdateOne) ClearExpiresAt() *SessionUpdateOne {
 	suo.mutation.ClearExpiresAt()
 	return suo
@@ -224,7 +224,7 @@ func (suo *SessionUpdateOne) Mutation() *SessionMutation {
 	return suo.mutation
 }
 
-// Save executes the query and returns the updated entity.
+// Save executes the query and returns the updated Session entity.
 func (suo *SessionUpdateOne) Save(ctx context.Context) (*Session, error) {
 	var (
 		err  error
@@ -300,6 +300,13 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Session.ID for update")}
 	}
 	_spec.Node.ID.Value = id
+	if ps := suo.mutation.predicates; len(ps) > 0 {
+		_spec.Predicate = func(selector *sql.Selector) {
+			for i := range ps {
+				ps[i](selector)
+			}
+		}
+	}
 	if value, ok := suo.mutation.Data(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -329,7 +336,7 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	}
 	_node = &Session{config: suo.config}
 	_spec.Assign = _node.assignValues
-	_spec.ScanValues = _node.scanValues()
+	_spec.ScanValues = _node.scanValues
 	if err = sqlgraph.UpdateNode(ctx, suo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{session.Label}

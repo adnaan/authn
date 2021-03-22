@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/account"
 	"github.com/adnaan/authn/models/predicate"
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 	"github.com/google/uuid"
 )
 
@@ -22,13 +22,14 @@ type AccountQuery struct {
 	limit      *int
 	offset     *int
 	order      []OrderFunc
+	fields     []string
 	predicates []predicate.Account
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the builder.
+// Where adds a new predicate for the AccountQuery builder.
 func (aq *AccountQuery) Where(ps ...predicate.Account) *AccountQuery {
 	aq.predicates = append(aq.predicates, ps...)
 	return aq
@@ -52,7 +53,8 @@ func (aq *AccountQuery) Order(o ...OrderFunc) *AccountQuery {
 	return aq
 }
 
-// First returns the first Account entity in the query. Returns *NotFoundError when no account was found.
+// First returns the first Account entity from the query.
+// Returns a *NotFoundError when no Account was found.
 func (aq *AccountQuery) First(ctx context.Context) (*Account, error) {
 	nodes, err := aq.Limit(1).All(ctx)
 	if err != nil {
@@ -73,7 +75,8 @@ func (aq *AccountQuery) FirstX(ctx context.Context) *Account {
 	return node
 }
 
-// FirstID returns the first Account id in the query. Returns *NotFoundError when no id was found.
+// FirstID returns the first Account ID from the query.
+// Returns a *NotFoundError when no Account ID was found.
 func (aq *AccountQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
@@ -95,7 +98,9 @@ func (aq *AccountQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// Only returns the only Account entity in the query, returns an error if not exactly one entity was returned.
+// Only returns a single Account entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when exactly one Account entity is not found.
+// Returns a *NotFoundError when no Account entities are found.
 func (aq *AccountQuery) Only(ctx context.Context) (*Account, error) {
 	nodes, err := aq.Limit(2).All(ctx)
 	if err != nil {
@@ -120,7 +125,9 @@ func (aq *AccountQuery) OnlyX(ctx context.Context) *Account {
 	return node
 }
 
-// OnlyID returns the only Account id in the query, returns an error if not exactly one id was returned.
+// OnlyID is like Only, but returns the only Account ID in the query.
+// Returns a *NotSingularError when exactly one Account ID is not found.
+// Returns a *NotFoundError when no entities are found.
 func (aq *AccountQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
@@ -163,7 +170,7 @@ func (aq *AccountQuery) AllX(ctx context.Context) []*Account {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Account ids.
+// IDs executes the query and returns a list of Account IDs.
 func (aq *AccountQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
 	if err := aq.Select(account.FieldID).Scan(ctx, &ids); err != nil {
@@ -215,7 +222,7 @@ func (aq *AccountQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the query builder, including all associated steps. It can be
+// Clone returns a duplicate of the AccountQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
 func (aq *AccountQuery) Clone() *AccountQuery {
 	if aq == nil {
@@ -233,7 +240,7 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 	}
 }
 
-// GroupBy used to group vertices by one or more fields/columns.
+// GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
@@ -255,12 +262,13 @@ func (aq *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy 
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		return aq.sqlQuery(), nil
+		return aq.sqlQuery(ctx), nil
 	}
 	return group
 }
 
-// Select one or more fields from the given query.
+// Select allows the selection one or more fields/columns for the given query,
+// instead of selecting all fields in the entity.
 //
 // Example:
 //
@@ -273,18 +281,16 @@ func (aq *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy 
 //		Scan(ctx, &v)
 //
 func (aq *AccountQuery) Select(field string, fields ...string) *AccountSelect {
-	selector := &AccountSelect{config: aq.config}
-	selector.fields = append([]string{field}, fields...)
-	selector.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return aq.sqlQuery(), nil
-	}
-	return selector
+	aq.fields = append([]string{field}, fields...)
+	return &AccountSelect{AccountQuery: aq}
 }
 
 func (aq *AccountQuery) prepareQuery(ctx context.Context) error {
+	for _, f := range aq.fields {
+		if !account.ValidColumn(f) {
+			return &ValidationError{Name: f, err: fmt.Errorf("models: invalid field %q for query", f)}
+		}
+	}
 	if aq.path != nil {
 		prev, err := aq.path(ctx)
 		if err != nil {
@@ -300,18 +306,17 @@ func (aq *AccountQuery) sqlAll(ctx context.Context) ([]*Account, error) {
 		nodes = []*Account{}
 		_spec = aq.querySpec()
 	)
-	_spec.ScanValues = func() []interface{} {
+	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Account{config: aq.config}
 		nodes = append(nodes, node)
-		values := node.scanValues()
-		return values
+		return node.scanValues(columns)
 	}
-	_spec.Assign = func(values ...interface{}) error {
+	_spec.Assign = func(columns []string, values []interface{}) error {
 		if len(nodes) == 0 {
 			return fmt.Errorf("models: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
-		return node.assignValues(values...)
+		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, aq.driver, _spec); err != nil {
 		return nil, err
@@ -330,7 +335,7 @@ func (aq *AccountQuery) sqlCount(ctx context.Context) (int, error) {
 func (aq *AccountQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := aq.sqlCount(ctx)
 	if err != nil {
-		return false, fmt.Errorf("models: check existence: %v", err)
+		return false, fmt.Errorf("models: check existence: %w", err)
 	}
 	return n > 0, nil
 }
@@ -347,6 +352,15 @@ func (aq *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 		},
 		From:   aq.sql,
 		Unique: true,
+	}
+	if fields := aq.fields; len(fields) > 0 {
+		_spec.Node.Columns = make([]string, 0, len(fields))
+		_spec.Node.Columns = append(_spec.Node.Columns, account.FieldID)
+		for i := range fields {
+			if fields[i] != account.FieldID {
+				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
+			}
+		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -371,7 +385,7 @@ func (aq *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (aq *AccountQuery) sqlQuery() *sql.Selector {
+func (aq *AccountQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(account.Table)
 	selector := builder.Select(t1.Columns(account.Columns...)...).From(t1)
@@ -396,7 +410,7 @@ func (aq *AccountQuery) sqlQuery() *sql.Selector {
 	return selector
 }
 
-// AccountGroupBy is the builder for group-by Account entities.
+// AccountGroupBy is the group-by builder for Account entities.
 type AccountGroupBy struct {
 	config
 	fields []string
@@ -412,7 +426,7 @@ func (agb *AccountGroupBy) Aggregate(fns ...AggregateFunc) *AccountGroupBy {
 	return agb
 }
 
-// Scan applies the group-by query and scan the result into the given value.
+// Scan applies the group-by query and scans the result into the given value.
 func (agb *AccountGroupBy) Scan(ctx context.Context, v interface{}) error {
 	query, err := agb.path(ctx)
 	if err != nil {
@@ -429,7 +443,8 @@ func (agb *AccountGroupBy) ScanX(ctx context.Context, v interface{}) {
 	}
 }
 
-// Strings returns list of strings from group-by. It is only allowed when querying group-by with one field.
+// Strings returns list of strings from group-by.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Strings(ctx context.Context) ([]string, error) {
 	if len(agb.fields) > 1 {
 		return nil, errors.New("models: AccountGroupBy.Strings is not achievable when grouping more than 1 field")
@@ -450,7 +465,8 @@ func (agb *AccountGroupBy) StringsX(ctx context.Context) []string {
 	return v
 }
 
-// String returns a single string from group-by. It is only allowed when querying group-by with one field.
+// String returns a single string from a group-by query.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = agb.Strings(ctx); err != nil {
@@ -476,7 +492,8 @@ func (agb *AccountGroupBy) StringX(ctx context.Context) string {
 	return v
 }
 
-// Ints returns list of ints from group-by. It is only allowed when querying group-by with one field.
+// Ints returns list of ints from group-by.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Ints(ctx context.Context) ([]int, error) {
 	if len(agb.fields) > 1 {
 		return nil, errors.New("models: AccountGroupBy.Ints is not achievable when grouping more than 1 field")
@@ -497,7 +514,8 @@ func (agb *AccountGroupBy) IntsX(ctx context.Context) []int {
 	return v
 }
 
-// Int returns a single int from group-by. It is only allowed when querying group-by with one field.
+// Int returns a single int from a group-by query.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = agb.Ints(ctx); err != nil {
@@ -523,7 +541,8 @@ func (agb *AccountGroupBy) IntX(ctx context.Context) int {
 	return v
 }
 
-// Float64s returns list of float64s from group-by. It is only allowed when querying group-by with one field.
+// Float64s returns list of float64s from group-by.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 	if len(agb.fields) > 1 {
 		return nil, errors.New("models: AccountGroupBy.Float64s is not achievable when grouping more than 1 field")
@@ -544,7 +563,8 @@ func (agb *AccountGroupBy) Float64sX(ctx context.Context) []float64 {
 	return v
 }
 
-// Float64 returns a single float64 from group-by. It is only allowed when querying group-by with one field.
+// Float64 returns a single float64 from a group-by query.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = agb.Float64s(ctx); err != nil {
@@ -570,7 +590,8 @@ func (agb *AccountGroupBy) Float64X(ctx context.Context) float64 {
 	return v
 }
 
-// Bools returns list of bools from group-by. It is only allowed when querying group-by with one field.
+// Bools returns list of bools from group-by.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Bools(ctx context.Context) ([]bool, error) {
 	if len(agb.fields) > 1 {
 		return nil, errors.New("models: AccountGroupBy.Bools is not achievable when grouping more than 1 field")
@@ -591,7 +612,8 @@ func (agb *AccountGroupBy) BoolsX(ctx context.Context) []bool {
 	return v
 }
 
-// Bool returns a single bool from group-by. It is only allowed when querying group-by with one field.
+// Bool returns a single bool from a group-by query.
+// It is only allowed when executing a group-by query with one field.
 func (agb *AccountGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = agb.Bools(ctx); err != nil {
@@ -646,22 +668,19 @@ func (agb *AccountGroupBy) sqlQuery() *sql.Selector {
 	return selector.Select(columns...).GroupBy(agb.fields...)
 }
 
-// AccountSelect is the builder for select fields of Account entities.
+// AccountSelect is the builder for selecting fields of Account entities.
 type AccountSelect struct {
-	config
-	fields []string
+	*AccountQuery
 	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	sql *sql.Selector
 }
 
-// Scan applies the selector query and scan the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (as *AccountSelect) Scan(ctx context.Context, v interface{}) error {
-	query, err := as.path(ctx)
-	if err != nil {
+	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	as.sql = query
+	as.sql = as.AccountQuery.sqlQuery(ctx)
 	return as.sqlScan(ctx, v)
 }
 
@@ -672,7 +691,7 @@ func (as *AccountSelect) ScanX(ctx context.Context, v interface{}) {
 	}
 }
 
-// Strings returns list of strings from selector. It is only allowed when selecting one field.
+// Strings returns list of strings from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Strings(ctx context.Context) ([]string, error) {
 	if len(as.fields) > 1 {
 		return nil, errors.New("models: AccountSelect.Strings is not achievable when selecting more than 1 field")
@@ -693,7 +712,7 @@ func (as *AccountSelect) StringsX(ctx context.Context) []string {
 	return v
 }
 
-// String returns a single string from selector. It is only allowed when selecting one field.
+// String returns a single string from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = as.Strings(ctx); err != nil {
@@ -719,7 +738,7 @@ func (as *AccountSelect) StringX(ctx context.Context) string {
 	return v
 }
 
-// Ints returns list of ints from selector. It is only allowed when selecting one field.
+// Ints returns list of ints from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Ints(ctx context.Context) ([]int, error) {
 	if len(as.fields) > 1 {
 		return nil, errors.New("models: AccountSelect.Ints is not achievable when selecting more than 1 field")
@@ -740,7 +759,7 @@ func (as *AccountSelect) IntsX(ctx context.Context) []int {
 	return v
 }
 
-// Int returns a single int from selector. It is only allowed when selecting one field.
+// Int returns a single int from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = as.Ints(ctx); err != nil {
@@ -766,7 +785,7 @@ func (as *AccountSelect) IntX(ctx context.Context) int {
 	return v
 }
 
-// Float64s returns list of float64s from selector. It is only allowed when selecting one field.
+// Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Float64s(ctx context.Context) ([]float64, error) {
 	if len(as.fields) > 1 {
 		return nil, errors.New("models: AccountSelect.Float64s is not achievable when selecting more than 1 field")
@@ -787,7 +806,7 @@ func (as *AccountSelect) Float64sX(ctx context.Context) []float64 {
 	return v
 }
 
-// Float64 returns a single float64 from selector. It is only allowed when selecting one field.
+// Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = as.Float64s(ctx); err != nil {
@@ -813,7 +832,7 @@ func (as *AccountSelect) Float64X(ctx context.Context) float64 {
 	return v
 }
 
-// Bools returns list of bools from selector. It is only allowed when selecting one field.
+// Bools returns list of bools from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Bools(ctx context.Context) ([]bool, error) {
 	if len(as.fields) > 1 {
 		return nil, errors.New("models: AccountSelect.Bools is not achievable when selecting more than 1 field")
@@ -834,7 +853,7 @@ func (as *AccountSelect) BoolsX(ctx context.Context) []bool {
 	return v
 }
 
-// Bool returns a single bool from selector. It is only allowed when selecting one field.
+// Bool returns a single bool from a selector. It is only allowed when selecting one field.
 func (as *AccountSelect) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = as.Bools(ctx); err != nil {
@@ -861,11 +880,6 @@ func (as *AccountSelect) BoolX(ctx context.Context) bool {
 }
 
 func (as *AccountSelect) sqlScan(ctx context.Context, v interface{}) error {
-	for _, f := range as.fields {
-		if !account.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for selection", f)}
-		}
-	}
 	rows := &sql.Rows{}
 	query, args := as.sqlQuery().Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {

@@ -6,11 +6,11 @@ import (
 	"context"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/schema/field"
 	"github.com/adnaan/authn/models/account"
 	"github.com/adnaan/authn/models/predicate"
-	"github.com/facebook/ent/dialect/sql"
-	"github.com/facebook/ent/dialect/sql/sqlgraph"
-	"github.com/facebook/ent/schema/field"
 )
 
 // AccountDelete is the builder for deleting a Account entity.
@@ -20,7 +20,7 @@ type AccountDelete struct {
 	mutation *AccountMutation
 }
 
-// Where adds a new predicate to the delete builder.
+// Where adds a new predicate to the AccountDelete builder.
 func (ad *AccountDelete) Where(ps ...predicate.Account) *AccountDelete {
 	ad.mutation.predicates = append(ad.mutation.predicates, ps...)
 	return ad
