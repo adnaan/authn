@@ -144,3 +144,7 @@ func (a *Account) Delete() error {
 func (a *Account) Email() string {
 	return a.acc.Email
 }
+
+func (a *Account) ID() uuid.UUID {
+	return a.acc.ID
+}
