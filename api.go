@@ -505,7 +505,6 @@ func (a *API) IsAuthenticated(next http.Handler) http.Handler {
 			case formContentType:
 				http.Redirect(w, r, redirectTo, http.StatusSeeOther)
 				return
-
 			}
 			return
 		}
@@ -517,10 +516,16 @@ func (a *API) IsAuthenticated(next http.Handler) http.Handler {
 				http.Redirect(w, r, redirectTo, http.StatusSeeOther)
 				return
 			}
-		} else {
-			ctx := r.Context()
-			ctx = context.WithValue(ctx, AccountIDKey, id)
-			next.ServeHTTP(w, r.WithContext(ctx))
 		}
+		if _, err := a.GetAccount(r.Context(), id.(string)); err != nil {
+			switch contentType {
+			case formContentType:
+				http.Redirect(w, r, redirectTo, http.StatusSeeOther)
+				return
+			}
+		}
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, AccountIDKey, id)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
