@@ -11,5 +11,4 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/markbates/goth v1.66.1
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/tools v0.1.0 // indirect
 )

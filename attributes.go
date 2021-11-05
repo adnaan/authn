@@ -1,6 +1,7 @@
 package authn
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -47,7 +48,6 @@ func (m M) Bool(key string) (bool, bool) {
 
 func (a *Account) Attributes() *Attributes {
 	return &Attributes{
-		req:          a.req,
 		acc:          a.acc,
 		sessionStore: a.sessionStore,
 		sessionAttributes: &SessionAttributes{
@@ -66,6 +66,9 @@ type SessionAttributes struct {
 
 // Get gets an attribute from the temporary session store for the account
 func (a *SessionAttributes) Map() (M, error) {
+	if a.req == nil {
+		return nil, fmt.Errorf("session is unavailable")
+	}
 
 	session, err := a.sessionStore.Get(a.req, sessionStoreKey)
 	if err != nil {
@@ -85,6 +88,9 @@ func (a *SessionAttributes) Map() (M, error) {
 
 // Get gets an attribute from the temporary session store for the account
 func (a *SessionAttributes) Get(key string) (interface{}, error) {
+	if a.req == nil {
+		return nil, fmt.Errorf("session is unavailable")
+	}
 
 	session, err := a.sessionStore.Get(a.req, sessionStoreKey)
 	if err != nil {
@@ -101,7 +107,9 @@ func (a *SessionAttributes) Get(key string) (interface{}, error) {
 
 // Set sets an attribute in the temporary session store for the account
 func (a *SessionAttributes) Set(w http.ResponseWriter, key string, val interface{}) error {
-
+	if a.req == nil {
+		return fmt.Errorf("session is unavailable")
+	}
 	session, err := a.sessionStore.Get(a.req, sessionStoreKey)
 	if err != nil {
 		return fmt.Errorf("err: %v, %w", err, ErrLoginSessionNotFound)
@@ -118,7 +126,9 @@ func (a *SessionAttributes) Set(w http.ResponseWriter, key string, val interface
 
 // Del deletes an attribute from the temporary session store for the account
 func (a *SessionAttributes) Del(w http.ResponseWriter, key string) error {
-
+	if a.req == nil {
+		return fmt.Errorf("session is unavailable")
+	}
 	session, err := a.sessionStore.Get(a.req, sessionStoreKey)
 	if err != nil {
 		return fmt.Errorf("err: %v, %w", err, ErrLoginSessionNotFound)
@@ -147,17 +157,20 @@ func (a *Attributes) Get(key string) (interface{}, error) {
 	return v, nil
 }
 
-// All gets all attributes from the database for the account
+// Map gets all attributes from the database for the account
 func (a *Attributes) Map() M {
 	return a.acc.Attributes
 }
 
 // Set stores an attribute in the database for the account
-func (a *Attributes) Set(key string, val interface{}) error {
+func (a *Attributes) Set(ctx context.Context, key string, val interface{}) error {
 	currentAttributes := a.acc.Attributes
+	if currentAttributes == nil {
+		currentAttributes = make(map[string]interface{})
+	}
 	currentAttributes[key] = val
 
-	err := a.acc.Update().SetAttributes(currentAttributes).Exec(a.req.Context())
+	err := a.acc.Update().SetAttributes(currentAttributes).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
 	}
@@ -165,11 +178,11 @@ func (a *Attributes) Set(key string, val interface{}) error {
 }
 
 // Del deletes an attribute from the database for the account
-func (a *Attributes) Del(key string) error {
+func (a *Attributes) Del(ctx context.Context, key string) error {
 	currentAttributes := a.acc.Attributes
 	delete(currentAttributes, key)
 
-	err := a.acc.Update().SetAttributes(currentAttributes).Exec(a.req.Context())
+	err := a.acc.Update().SetAttributes(currentAttributes).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
 	}
@@ -177,12 +190,12 @@ func (a *Attributes) Del(key string) error {
 }
 
 // SetMany stores  many attributes in the database for the account
-func (a *Attributes) SetMany(attrs map[string]interface{}) error {
+func (a *Attributes) SetMany(ctx context.Context, attrs map[string]interface{}) error {
 	currentAttributes := a.acc.Attributes
 	for k, v := range attrs {
 		currentAttributes[k] = v
 	}
-	err := a.acc.Update().SetAttributes(currentAttributes).Exec(a.req.Context())
+	err := a.acc.Update().SetAttributes(currentAttributes).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
 	}
@@ -190,12 +203,12 @@ func (a *Attributes) SetMany(attrs map[string]interface{}) error {
 }
 
 // DelMany deletes many attributes from the database for the account
-func (a *Attributes) DelMany(keys []string) error {
+func (a *Attributes) DelMany(ctx context.Context, keys []string) error {
 	currentAttributes := a.acc.Attributes
 	for _, k := range keys {
 		delete(currentAttributes, k)
 	}
-	err := a.acc.Update().SetAttributes(currentAttributes).Exec(a.req.Context())
+	err := a.acc.Update().SetAttributes(currentAttributes).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
 	}
@@ -203,8 +216,8 @@ func (a *Attributes) DelMany(keys []string) error {
 }
 
 // SetBytes stores byte data in the database for the account
-func (a *Attributes) SetBytes(attr []byte) error {
-	err := a.acc.Update().SetAttributeBytes(attr).Exec(a.req.Context())
+func (a *Attributes) SetBytes(ctx context.Context, attr []byte) error {
+	err := a.acc.Update().SetAttributeBytes(attr).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
 	}
@@ -217,8 +230,8 @@ func (a *Attributes) GetBytes() []byte {
 }
 
 // DelBytes delete byte data from the database for the account
-func (a *Attributes) DelBytes() error {
-	err := a.acc.Update().ClearAttributeBytes().Exec(a.req.Context())
+func (a *Attributes) DelBytes(ctx context.Context) error {
+	err := a.acc.Update().ClearAttributeBytes().Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
 	}

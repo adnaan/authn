@@ -14,7 +14,7 @@ import (
 
 type Account struct {
 	acc          *models.Account
-	req          *http.Request
+	req *http.Request
 	cfg          Config
 	sessionStore SessionsStore
 	client       *models.Client
@@ -81,21 +81,25 @@ func logout(sessionStore SessionsStore, w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (a *Account) Logout(w http.ResponseWriter, r *http.Request) {
+func (a *Account) Logout(w http.ResponseWriter, r *http.Request) error {
+	if a.sessionStore == nil {
+		return fmt.Errorf("session is missing")
+	}
 	logout(a.sessionStore, w, r)
+	return nil
 }
 
-func (a *Account) ChangeEmail(newEmail string) error {
+func (a *Account) ChangeEmail(ctx context.Context, newEmail string) error {
 	if !isEmailValid(newEmail) {
 		return fmt.Errorf("%w", ErrInvalidEmail)
 	}
 
-	return withTx(a.req.Context(), a.client, func(tx *models.Tx) error {
+	return withTx(ctx, a.client, func(tx *models.Tx) error {
 		var err error
 		token := uuid.New().String()
 		a.acc, err = tx.Account.UpdateOneID(a.acc.ID).
 			SetEmailChange(newEmail).
-			SetEmailChangeToken(token).Save(a.req.Context())
+			SetEmailChangeToken(token).Save(ctx)
 		if err != nil {
 			return fmt.Errorf("%v %w", err, ErrInternal)
 		}
@@ -105,7 +109,7 @@ func (a *Account) ChangeEmail(newEmail string) error {
 			return fmt.Errorf("%v %w", err, ErrInternal)
 		}
 		a.acc, err = tx.Account.UpdateOneID(a.acc.ID).
-			SetEmailChangeSentAt(time.Now()).Save(a.req.Context())
+			SetEmailChangeSentAt(time.Now()).Save(ctx)
 		if err != nil {
 			return fmt.Errorf("%v %w", err, ErrInternal)
 		}
@@ -113,18 +117,16 @@ func (a *Account) ChangeEmail(newEmail string) error {
 	})
 }
 
-func (a *Account) ConfirmEmailChange(token string) error {
-
+func (a *Account) ConfirmEmailChange(ctx context.Context, token string) error {
 	if *a.acc.EmailChangeToken != token {
 		return fmt.Errorf("%w", ErrInvalidToken)
 	}
-
 	err := a.acc.Update().
 		SetEmail(a.acc.EmailChange).
 		ClearEmailChangeToken().
 		ClearEmailChangeSentAt().
 		ClearEmailChange().
-		Exec(a.req.Context())
+		Exec(ctx)
 
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrUpdatingUser)
@@ -133,8 +135,8 @@ func (a *Account) ConfirmEmailChange(token string) error {
 	return nil
 }
 
-func (a *Account) Delete() error {
-	err := a.client.Account.DeleteOne(a.acc).Exec(a.req.Context())
+func (a *Account) Delete(ctx context.Context) error {
+	err := a.client.Account.DeleteOne(a.acc).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrInternal)
 	}

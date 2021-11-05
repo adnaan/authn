@@ -464,8 +464,27 @@ func (a *API) CurrentAccount(r *http.Request) (*Account, error) {
 	return &Account{
 		acc:          acc,
 		sessionStore: a.sessionStore,
-		req:          r,
+		cfg:          a.cfg,
 		client:       a.client,
+	}, nil
+}
+
+// GetAccount retrieves an account by user ID
+func (a *API) GetAccount(ctx context.Context, userID string) (*Account, error) {
+	uid, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("%v %w", err, ErrLoginSessionNotFound)
+	}
+
+	acc, err := a.client.Account.Get(ctx, uid)
+	if err != nil {
+		return nil, fmt.Errorf("%v %w", err, ErrUserNotFound)
+	}
+
+	return &Account{
+		acc:    acc,
+		cfg:    a.cfg,
+		client: a.client,
 	}, nil
 }
 
