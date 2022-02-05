@@ -3,7 +3,7 @@ module github.com/adnaan/authn
 go 1.17
 
 require (
-	entgo.io/ent v0.9.1
+	entgo.io/ent v0.10.0
 	github.com/fatih/structs v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/context v1.1.1
