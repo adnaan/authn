@@ -259,6 +259,14 @@ func (ac *AccountCreate) SetID(u uuid.UUID) *AccountCreate {
 	return ac
 }
 
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ac *AccountCreate) SetNillableID(u *uuid.UUID) *AccountCreate {
+	if u != nil {
+		ac.SetID(*u)
+	}
+	return ac
+}
+
 // Mutation returns the AccountMutation object of the builder.
 func (ac *AccountCreate) Mutation() *AccountMutation {
 	return ac.mutation
@@ -286,11 +294,17 @@ func (ac *AccountCreate) Save(ctx context.Context) (*Account, error) {
 				return nil, err
 			}
 			ac.mutation = mutation
-			node, err = ac.sqlSave(ctx)
+			if node, err = ac.sqlSave(ctx); err != nil {
+				return nil, err
+			}
+			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
 		for i := len(ac.hooks) - 1; i >= 0; i-- {
+			if ac.hooks[i] == nil {
+				return nil, fmt.Errorf("models: uninitialized hook (forgotten import models/runtime?)")
+			}
 			mut = ac.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, ac.mutation); err != nil {
@@ -307,6 +321,19 @@ func (ac *AccountCreate) SaveX(ctx context.Context) *Account {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (ac *AccountCreate) Exec(ctx context.Context) error {
+	_, err := ac.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (ac *AccountCreate) ExecX(ctx context.Context) {
+	if err := ac.Exec(ctx); err != nil {
+		panic(err)
+	}
 }
 
 // defaults sets the default values of the builder before save.
@@ -336,62 +363,62 @@ func (ac *AccountCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ac *AccountCreate) check() error {
 	if _, ok := ac.mutation.Provider(); !ok {
-		return &ValidationError{Name: "provider", err: errors.New("models: missing required field \"provider\"")}
+		return &ValidationError{Name: "provider", err: errors.New(`models: missing required field "Account.provider"`)}
 	}
 	if v, ok := ac.mutation.Provider(); ok {
 		if err := account.ProviderValidator(v); err != nil {
-			return &ValidationError{Name: "provider", err: fmt.Errorf("models: validator failed for field \"provider\": %w", err)}
+			return &ValidationError{Name: "provider", err: fmt.Errorf(`models: validator failed for field "Account.provider": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New("models: missing required field \"email\"")}
+		return &ValidationError{Name: "email", err: errors.New(`models: missing required field "Account.email"`)}
 	}
 	if v, ok := ac.mutation.Email(); ok {
 		if err := account.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf("models: validator failed for field \"email\": %w", err)}
+			return &ValidationError{Name: "email", err: fmt.Errorf(`models: validator failed for field "Account.email": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New("models: missing required field \"password\"")}
+		return &ValidationError{Name: "password", err: errors.New(`models: missing required field "Account.password"`)}
 	}
 	if v, ok := ac.mutation.Password(); ok {
 		if err := account.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf("models: validator failed for field \"password\": %w", err)}
+			return &ValidationError{Name: "password", err: fmt.Errorf(`models: validator failed for field "Account.password": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.Locked(); !ok {
-		return &ValidationError{Name: "locked", err: errors.New("models: missing required field \"locked\"")}
+		return &ValidationError{Name: "locked", err: errors.New(`models: missing required field "Account.locked"`)}
 	}
 	if v, ok := ac.mutation.ConfirmationToken(); ok {
 		if err := account.ConfirmationTokenValidator(v); err != nil {
-			return &ValidationError{Name: "confirmation_token", err: fmt.Errorf("models: validator failed for field \"confirmation_token\": %w", err)}
+			return &ValidationError{Name: "confirmation_token", err: fmt.Errorf(`models: validator failed for field "Account.confirmation_token": %w`, err)}
 		}
 	}
 	if v, ok := ac.mutation.RecoveryToken(); ok {
 		if err := account.RecoveryTokenValidator(v); err != nil {
-			return &ValidationError{Name: "recovery_token", err: fmt.Errorf("models: validator failed for field \"recovery_token\": %w", err)}
+			return &ValidationError{Name: "recovery_token", err: fmt.Errorf(`models: validator failed for field "Account.recovery_token": %w`, err)}
 		}
 	}
 	if v, ok := ac.mutation.Otp(); ok {
 		if err := account.OtpValidator(v); err != nil {
-			return &ValidationError{Name: "otp", err: fmt.Errorf("models: validator failed for field \"otp\": %w", err)}
+			return &ValidationError{Name: "otp", err: fmt.Errorf(`models: validator failed for field "Account.otp": %w`, err)}
 		}
 	}
 	if v, ok := ac.mutation.EmailChange(); ok {
 		if err := account.EmailChangeValidator(v); err != nil {
-			return &ValidationError{Name: "email_change", err: fmt.Errorf("models: validator failed for field \"email_change\": %w", err)}
+			return &ValidationError{Name: "email_change", err: fmt.Errorf(`models: validator failed for field "Account.email_change": %w`, err)}
 		}
 	}
 	if v, ok := ac.mutation.EmailChangeToken(); ok {
 		if err := account.EmailChangeTokenValidator(v); err != nil {
-			return &ValidationError{Name: "email_change_token", err: fmt.Errorf("models: validator failed for field \"email_change_token\": %w", err)}
+			return &ValidationError{Name: "email_change_token", err: fmt.Errorf(`models: validator failed for field "Account.email_change_token": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New("models: missing required field \"created_at\"")}
+		return &ValidationError{Name: "created_at", err: errors.New(`models: missing required field "Account.created_at"`)}
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New("models: missing required field \"updated_at\"")}
+		return &ValidationError{Name: "updated_at", err: errors.New(`models: missing required field "Account.updated_at"`)}
 	}
 	return nil
 }
@@ -399,10 +426,17 @@ func (ac *AccountCreate) check() error {
 func (ac *AccountCreate) sqlSave(ctx context.Context) (*Account, error) {
 	_node, _spec := ac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
-		if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
+	}
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -420,7 +454,7 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	)
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ac.mutation.Provider(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -614,17 +648,19 @@ func (acb *AccountCreateBulk) Save(ctx context.Context) ([]*Account, error) {
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, acb.builders[i+1].mutation)
 				} else {
+					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, acb.driver, &sqlgraph.BatchCreateSpec{Nodes: specs}); err != nil {
-						if cerr, ok := isSQLConstraintError(err); ok {
-							err = cerr
+					if err = sqlgraph.BatchCreate(ctx, acb.driver, spec); err != nil {
+						if sqlgraph.IsConstraintError(err) {
+							err = &ConstraintError{err.Error(), err}
 						}
 					}
 				}
-				mutation.done = true
 				if err != nil {
 					return nil, err
 				}
+				mutation.id = &nodes[i].ID
+				mutation.done = true
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -648,4 +684,17 @@ func (acb *AccountCreateBulk) SaveX(ctx context.Context) []*Account {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (acb *AccountCreateBulk) Exec(ctx context.Context) error {
+	_, err := acb.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (acb *AccountCreateBulk) ExecX(ctx context.Context) {
+	if err := acb.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

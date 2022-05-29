@@ -4,6 +4,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -21,9 +22,9 @@ type SessionUpdate struct {
 	mutation *SessionMutation
 }
 
-// Where adds a new predicate for the SessionUpdate builder.
+// Where appends a list predicates to the SessionUpdate builder.
 func (su *SessionUpdate) Where(ps ...predicate.Session) *SessionUpdate {
-	su.mutation.predicates = append(su.mutation.predicates, ps...)
+	su.mutation.Where(ps...)
 	return su
 }
 
@@ -85,6 +86,9 @@ func (su *SessionUpdate) Save(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(su.hooks) - 1; i >= 0; i-- {
+			if su.hooks[i] == nil {
+				return 0, fmt.Errorf("models: uninitialized hook (forgotten import models/runtime?)")
+			}
 			mut = su.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, su.mutation); err != nil {
@@ -172,8 +176,8 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{session.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return 0, err
 	}
@@ -183,6 +187,7 @@ func (su *SessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // SessionUpdateOne is the builder for updating a single Session entity.
 type SessionUpdateOne struct {
 	config
+	fields   []string
 	hooks    []Hook
 	mutation *SessionMutation
 }
@@ -224,6 +229,13 @@ func (suo *SessionUpdateOne) Mutation() *SessionMutation {
 	return suo.mutation
 }
 
+// Select allows selecting one or more fields (columns) of the returned entity.
+// The default is selecting all fields defined in the entity schema.
+func (suo *SessionUpdateOne) Select(field string, fields ...string) *SessionUpdateOne {
+	suo.fields = append([]string{field}, fields...)
+	return suo
+}
+
 // Save executes the query and returns the updated Session entity.
 func (suo *SessionUpdateOne) Save(ctx context.Context) (*Session, error) {
 	var (
@@ -245,6 +257,9 @@ func (suo *SessionUpdateOne) Save(ctx context.Context) (*Session, error) {
 			return node, err
 		})
 		for i := len(suo.hooks) - 1; i >= 0; i-- {
+			if suo.hooks[i] == nil {
+				return nil, fmt.Errorf("models: uninitialized hook (forgotten import models/runtime?)")
+			}
 			mut = suo.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, suo.mutation); err != nil {
@@ -297,9 +312,21 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	}
 	id, ok := suo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Session.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`models: missing "Session.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
+	if fields := suo.fields; len(fields) > 0 {
+		_spec.Node.Columns = make([]string, 0, len(fields))
+		_spec.Node.Columns = append(_spec.Node.Columns, session.FieldID)
+		for _, f := range fields {
+			if !session.ValidColumn(f) {
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("models: invalid field %q for query", f)}
+			}
+			if f != session.FieldID {
+				_spec.Node.Columns = append(_spec.Node.Columns, f)
+			}
+		}
+	}
 	if ps := suo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -340,8 +367,8 @@ func (suo *SessionUpdateOne) sqlSave(ctx context.Context) (_node *Session, err e
 	if err = sqlgraph.UpdateNode(ctx, suo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{session.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}

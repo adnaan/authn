@@ -20,6 +20,7 @@ type SessionQuery struct {
 	config
 	limit      *int
 	offset     *int
+	unique     *bool
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Session
@@ -43,6 +44,13 @@ func (sq *SessionQuery) Limit(limit int) *SessionQuery {
 // Offset adds an offset step to the query.
 func (sq *SessionQuery) Offset(offset int) *SessionQuery {
 	sq.offset = &offset
+	return sq
+}
+
+// Unique configures the query builder to filter duplicate records on query.
+// By default, unique is set to true, and can be disabled using this method.
+func (sq *SessionQuery) Unique(unique bool) *SessionQuery {
+	sq.unique = &unique
 	return sq
 }
 
@@ -279,8 +287,8 @@ func (sq *SessionQuery) GroupBy(field string, fields ...string) *SessionGroupBy 
 //		Select(session.FieldData).
 //		Scan(ctx, &v)
 //
-func (sq *SessionQuery) Select(field string, fields ...string) *SessionSelect {
-	sq.fields = append([]string{field}, fields...)
+func (sq *SessionQuery) Select(fields ...string) *SessionSelect {
+	sq.fields = append(sq.fields, fields...)
 	return &SessionSelect{SessionQuery: sq}
 }
 
@@ -328,6 +336,10 @@ func (sq *SessionQuery) sqlAll(ctx context.Context) ([]*Session, error) {
 
 func (sq *SessionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
+	_spec.Node.Columns = sq.fields
+	if len(sq.fields) > 0 {
+		_spec.Unique = sq.unique != nil && *sq.unique
+	}
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
 }
 
@@ -351,6 +363,9 @@ func (sq *SessionQuery) querySpec() *sqlgraph.QuerySpec {
 		},
 		From:   sq.sql,
 		Unique: true,
+	}
+	if unique := sq.unique; unique != nil {
+		_spec.Unique = *unique
 	}
 	if fields := sq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
@@ -377,7 +392,7 @@ func (sq *SessionQuery) querySpec() *sqlgraph.QuerySpec {
 	if ps := sq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
-				ps[i](selector, session.ValidColumn)
+				ps[i](selector)
 			}
 		}
 	}
@@ -387,16 +402,23 @@ func (sq *SessionQuery) querySpec() *sqlgraph.QuerySpec {
 func (sq *SessionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(sq.driver.Dialect())
 	t1 := builder.Table(session.Table)
-	selector := builder.Select(t1.Columns(session.Columns...)...).From(t1)
+	columns := sq.fields
+	if len(columns) == 0 {
+		columns = session.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if sq.sql != nil {
 		selector = sq.sql
-		selector.Select(selector.Columns(session.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	if sq.unique != nil && *sq.unique {
+		selector.Distinct()
 	}
 	for _, p := range sq.predicates {
 		p(selector)
 	}
 	for _, p := range sq.order {
-		p(selector, session.ValidColumn)
+		p(selector)
 	}
 	if offset := sq.offset; offset != nil {
 		// limit is mandatory for offset clause. We start
@@ -658,13 +680,22 @@ func (sgb *SessionGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 func (sgb *SessionGroupBy) sqlQuery() *sql.Selector {
-	selector := sgb.sql
-	columns := make([]string, 0, len(sgb.fields)+len(sgb.fns))
-	columns = append(columns, sgb.fields...)
+	selector := sgb.sql.Select()
+	aggregation := make([]string, 0, len(sgb.fns))
 	for _, fn := range sgb.fns {
-		columns = append(columns, fn(selector, session.ValidColumn))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(sgb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(sgb.fields)+len(sgb.fns))
+		for _, f := range sgb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(sgb.fields...)...)
 }
 
 // SessionSelect is the builder for selecting fields of Session entities.
@@ -880,16 +911,10 @@ func (ss *SessionSelect) BoolX(ctx context.Context) bool {
 
 func (ss *SessionSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := ss.sqlQuery().Query()
+	query, args := ss.sql.Query()
 	if err := ss.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (ss *SessionSelect) sqlQuery() sql.Querier {
-	selector := ss.sql
-	selector.Select(selector.Columns(ss.fields...)...)
-	return selector
 }

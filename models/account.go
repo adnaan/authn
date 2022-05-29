@@ -66,15 +66,15 @@ func (*Account) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case account.FieldAttributes, account.FieldSensitiveAttributes, account.FieldAttributeBytes:
-			values[i] = &[]byte{}
+			values[i] = new([]byte)
 		case account.FieldLocked, account.FieldConfirmed:
-			values[i] = &sql.NullBool{}
+			values[i] = new(sql.NullBool)
 		case account.FieldProvider, account.FieldEmail, account.FieldPassword, account.FieldConfirmationToken, account.FieldRecoveryToken, account.FieldOtp, account.FieldEmailChange, account.FieldEmailChangeToken:
-			values[i] = &sql.NullString{}
+			values[i] = new(sql.NullString)
 		case account.FieldConfirmationSentAt, account.FieldRecoverySentAt, account.FieldOtpSentAt, account.FieldEmailChangeSentAt, account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldLastSigninAt:
-			values[i] = &sql.NullTime{}
+			values[i] = new(sql.NullTime)
 		case account.FieldID:
-			values[i] = &uuid.UUID{}
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Account", columns[i])
 		}
@@ -189,7 +189,6 @@ func (a *Account) assignValues(columns []string, values []interface{}) error {
 				*a.EmailChangeToken = value.String
 			}
 		case account.FieldAttributes:
-
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field attributes", values[i])
 			} else if value != nil && len(*value) > 0 {
@@ -198,7 +197,6 @@ func (a *Account) assignValues(columns []string, values []interface{}) error {
 				}
 			}
 		case account.FieldSensitiveAttributes:
-
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field sensitive_attributes", values[i])
 			} else if value != nil && len(*value) > 0 {

@@ -35,10 +35,9 @@ var (
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
 	AccountsTable = &schema.Table{
-		Name:        "accounts",
-		Columns:     AccountsColumns,
-		PrimaryKey:  []*schema.Column{AccountsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
+		Name:       "accounts",
+		Columns:    AccountsColumns,
+		PrimaryKey: []*schema.Column{AccountsColumns[0]},
 	}
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
@@ -50,10 +49,9 @@ var (
 	}
 	// SessionsTable holds the schema information for the "sessions" table.
 	SessionsTable = &schema.Table{
-		Name:        "sessions",
-		Columns:     SessionsColumns,
-		PrimaryKey:  []*schema.Column{SessionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{},
+		Name:       "sessions",
+		Columns:    SessionsColumns,
+		PrimaryKey: []*schema.Column{SessionsColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

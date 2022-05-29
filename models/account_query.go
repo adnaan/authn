@@ -21,6 +21,7 @@ type AccountQuery struct {
 	config
 	limit      *int
 	offset     *int
+	unique     *bool
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Account
@@ -44,6 +45,13 @@ func (aq *AccountQuery) Limit(limit int) *AccountQuery {
 // Offset adds an offset step to the query.
 func (aq *AccountQuery) Offset(offset int) *AccountQuery {
 	aq.offset = &offset
+	return aq
+}
+
+// Unique configures the query builder to filter duplicate records on query.
+// By default, unique is set to true, and can be disabled using this method.
+func (aq *AccountQuery) Unique(unique bool) *AccountQuery {
+	aq.unique = &unique
 	return aq
 }
 
@@ -280,8 +288,8 @@ func (aq *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy 
 //		Select(account.FieldProvider).
 //		Scan(ctx, &v)
 //
-func (aq *AccountQuery) Select(field string, fields ...string) *AccountSelect {
-	aq.fields = append([]string{field}, fields...)
+func (aq *AccountQuery) Select(fields ...string) *AccountSelect {
+	aq.fields = append(aq.fields, fields...)
 	return &AccountSelect{AccountQuery: aq}
 }
 
@@ -329,6 +337,10 @@ func (aq *AccountQuery) sqlAll(ctx context.Context) ([]*Account, error) {
 
 func (aq *AccountQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
+	_spec.Node.Columns = aq.fields
+	if len(aq.fields) > 0 {
+		_spec.Unique = aq.unique != nil && *aq.unique
+	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
@@ -352,6 +364,9 @@ func (aq *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 		},
 		From:   aq.sql,
 		Unique: true,
+	}
+	if unique := aq.unique; unique != nil {
+		_spec.Unique = *unique
 	}
 	if fields := aq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
@@ -378,7 +393,7 @@ func (aq *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 	if ps := aq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
-				ps[i](selector, account.ValidColumn)
+				ps[i](selector)
 			}
 		}
 	}
@@ -388,16 +403,23 @@ func (aq *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 func (aq *AccountQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(account.Table)
-	selector := builder.Select(t1.Columns(account.Columns...)...).From(t1)
+	columns := aq.fields
+	if len(columns) == 0 {
+		columns = account.Columns
+	}
+	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if aq.sql != nil {
 		selector = aq.sql
-		selector.Select(selector.Columns(account.Columns...)...)
+		selector.Select(selector.Columns(columns...)...)
+	}
+	if aq.unique != nil && *aq.unique {
+		selector.Distinct()
 	}
 	for _, p := range aq.predicates {
 		p(selector)
 	}
 	for _, p := range aq.order {
-		p(selector, account.ValidColumn)
+		p(selector)
 	}
 	if offset := aq.offset; offset != nil {
 		// limit is mandatory for offset clause. We start
@@ -659,13 +681,22 @@ func (agb *AccountGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 func (agb *AccountGroupBy) sqlQuery() *sql.Selector {
-	selector := agb.sql
-	columns := make([]string, 0, len(agb.fields)+len(agb.fns))
-	columns = append(columns, agb.fields...)
+	selector := agb.sql.Select()
+	aggregation := make([]string, 0, len(agb.fns))
 	for _, fn := range agb.fns {
-		columns = append(columns, fn(selector, account.ValidColumn))
+		aggregation = append(aggregation, fn(selector))
 	}
-	return selector.Select(columns...).GroupBy(agb.fields...)
+	// If no columns were selected in a custom aggregation function, the default
+	// selection is the fields used for "group-by", and the aggregation functions.
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
+		for _, f := range agb.fields {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	return selector.GroupBy(selector.Columns(agb.fields...)...)
 }
 
 // AccountSelect is the builder for selecting fields of Account entities.
@@ -881,16 +912,10 @@ func (as *AccountSelect) BoolX(ctx context.Context) bool {
 
 func (as *AccountSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
-	query, args := as.sqlQuery().Query()
+	query, args := as.sql.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
-}
-
-func (as *AccountSelect) sqlQuery() sql.Querier {
-	selector := as.sql
-	selector.Select(selector.Columns(as.fields...)...)
-	return selector
 }

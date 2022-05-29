@@ -108,25 +108,25 @@ func New(ctx context.Context, cfg Config) *API {
 
 // Signup a new account with email and password
 func (a *API) Signup(ctx context.Context, email, password string, attributes map[string]interface{}) error {
-	if len(password) < 8 {
-		return fmt.Errorf("%w", ErrInvalidPassword)
+	if len(password) < 6 {
+		return fmt.Errorf("%v %w", "invalid password", ErrInvalidPassword)
 	}
 
 	if !isEmailValid(email) {
-		return fmt.Errorf("%w", ErrInvalidEmail)
+		return fmt.Errorf("%v %w", "invalid email", ErrInvalidEmail)
+	}
+
+	exists, err := a.client.Account.Query().Where(account.Email(email)).Exist(ctx)
+	if err != nil {
+		return fmt.Errorf("%v %w", err, ErrInternal)
+	}
+	if exists {
+		return fmt.Errorf("%v %w", "user exists", ErrUserExists)
 	}
 
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return fmt.Errorf("%v %w", err, ErrInternal)
-	}
-
-	exists, err := a.client.Account.Query().Where(account.Email(email)).Exist(ctx)
-	if err != nil {
-		return fmt.Errorf("%w", ErrInternal)
-	}
-	if exists {
-		return fmt.Errorf("%w", ErrUserExists)
 	}
 
 	_, err = a.newAccount(ctx, email, hashedPassword, "email_signup", attributes, true)
