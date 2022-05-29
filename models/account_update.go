@@ -4,6 +4,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -21,9 +22,9 @@ type AccountUpdate struct {
 	mutation *AccountMutation
 }
 
-// Where adds a new predicate for the AccountUpdate builder.
+// Where appends a list predicates to the AccountUpdate builder.
 func (au *AccountUpdate) Where(ps ...predicate.Account) *AccountUpdate {
-	au.mutation.predicates = append(au.mutation.predicates, ps...)
+	au.mutation.Where(ps...)
 	return au
 }
 
@@ -353,6 +354,9 @@ func (au *AccountUpdate) Save(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(au.hooks) - 1; i >= 0; i-- {
+			if au.hooks[i] == nil {
+				return 0, fmt.Errorf("models: uninitialized hook (forgotten import models/runtime?)")
+			}
 			mut = au.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
@@ -396,42 +400,42 @@ func (au *AccountUpdate) defaults() {
 func (au *AccountUpdate) check() error {
 	if v, ok := au.mutation.Provider(); ok {
 		if err := account.ProviderValidator(v); err != nil {
-			return &ValidationError{Name: "provider", err: fmt.Errorf("models: validator failed for field \"provider\": %w", err)}
+			return &ValidationError{Name: "provider", err: fmt.Errorf(`models: validator failed for field "Account.provider": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.Email(); ok {
 		if err := account.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf("models: validator failed for field \"email\": %w", err)}
+			return &ValidationError{Name: "email", err: fmt.Errorf(`models: validator failed for field "Account.email": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.Password(); ok {
 		if err := account.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf("models: validator failed for field \"password\": %w", err)}
+			return &ValidationError{Name: "password", err: fmt.Errorf(`models: validator failed for field "Account.password": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.ConfirmationToken(); ok {
 		if err := account.ConfirmationTokenValidator(v); err != nil {
-			return &ValidationError{Name: "confirmation_token", err: fmt.Errorf("models: validator failed for field \"confirmation_token\": %w", err)}
+			return &ValidationError{Name: "confirmation_token", err: fmt.Errorf(`models: validator failed for field "Account.confirmation_token": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.RecoveryToken(); ok {
 		if err := account.RecoveryTokenValidator(v); err != nil {
-			return &ValidationError{Name: "recovery_token", err: fmt.Errorf("models: validator failed for field \"recovery_token\": %w", err)}
+			return &ValidationError{Name: "recovery_token", err: fmt.Errorf(`models: validator failed for field "Account.recovery_token": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.Otp(); ok {
 		if err := account.OtpValidator(v); err != nil {
-			return &ValidationError{Name: "otp", err: fmt.Errorf("models: validator failed for field \"otp\": %w", err)}
+			return &ValidationError{Name: "otp", err: fmt.Errorf(`models: validator failed for field "Account.otp": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.EmailChange(); ok {
 		if err := account.EmailChangeValidator(v); err != nil {
-			return &ValidationError{Name: "email_change", err: fmt.Errorf("models: validator failed for field \"email_change\": %w", err)}
+			return &ValidationError{Name: "email_change", err: fmt.Errorf(`models: validator failed for field "Account.email_change": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.EmailChangeToken(); ok {
 		if err := account.EmailChangeTokenValidator(v); err != nil {
-			return &ValidationError{Name: "email_change_token", err: fmt.Errorf("models: validator failed for field \"email_change_token\": %w", err)}
+			return &ValidationError{Name: "email_change_token", err: fmt.Errorf(`models: validator failed for field "Account.email_change_token": %w`, err)}
 		}
 	}
 	return nil
@@ -675,8 +679,8 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{account.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return 0, err
 	}
@@ -686,6 +690,7 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // AccountUpdateOne is the builder for updating a single Account entity.
 type AccountUpdateOne struct {
 	config
+	fields   []string
 	hooks    []Hook
 	mutation *AccountMutation
 }
@@ -989,6 +994,13 @@ func (auo *AccountUpdateOne) Mutation() *AccountMutation {
 	return auo.mutation
 }
 
+// Select allows selecting one or more fields (columns) of the returned entity.
+// The default is selecting all fields defined in the entity schema.
+func (auo *AccountUpdateOne) Select(field string, fields ...string) *AccountUpdateOne {
+	auo.fields = append([]string{field}, fields...)
+	return auo
+}
+
 // Save executes the query and returns the updated Account entity.
 func (auo *AccountUpdateOne) Save(ctx context.Context) (*Account, error) {
 	var (
@@ -1016,6 +1028,9 @@ func (auo *AccountUpdateOne) Save(ctx context.Context) (*Account, error) {
 			return node, err
 		})
 		for i := len(auo.hooks) - 1; i >= 0; i-- {
+			if auo.hooks[i] == nil {
+				return nil, fmt.Errorf("models: uninitialized hook (forgotten import models/runtime?)")
+			}
 			mut = auo.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, auo.mutation); err != nil {
@@ -1059,42 +1074,42 @@ func (auo *AccountUpdateOne) defaults() {
 func (auo *AccountUpdateOne) check() error {
 	if v, ok := auo.mutation.Provider(); ok {
 		if err := account.ProviderValidator(v); err != nil {
-			return &ValidationError{Name: "provider", err: fmt.Errorf("models: validator failed for field \"provider\": %w", err)}
+			return &ValidationError{Name: "provider", err: fmt.Errorf(`models: validator failed for field "Account.provider": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.Email(); ok {
 		if err := account.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf("models: validator failed for field \"email\": %w", err)}
+			return &ValidationError{Name: "email", err: fmt.Errorf(`models: validator failed for field "Account.email": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.Password(); ok {
 		if err := account.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf("models: validator failed for field \"password\": %w", err)}
+			return &ValidationError{Name: "password", err: fmt.Errorf(`models: validator failed for field "Account.password": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.ConfirmationToken(); ok {
 		if err := account.ConfirmationTokenValidator(v); err != nil {
-			return &ValidationError{Name: "confirmation_token", err: fmt.Errorf("models: validator failed for field \"confirmation_token\": %w", err)}
+			return &ValidationError{Name: "confirmation_token", err: fmt.Errorf(`models: validator failed for field "Account.confirmation_token": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.RecoveryToken(); ok {
 		if err := account.RecoveryTokenValidator(v); err != nil {
-			return &ValidationError{Name: "recovery_token", err: fmt.Errorf("models: validator failed for field \"recovery_token\": %w", err)}
+			return &ValidationError{Name: "recovery_token", err: fmt.Errorf(`models: validator failed for field "Account.recovery_token": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.Otp(); ok {
 		if err := account.OtpValidator(v); err != nil {
-			return &ValidationError{Name: "otp", err: fmt.Errorf("models: validator failed for field \"otp\": %w", err)}
+			return &ValidationError{Name: "otp", err: fmt.Errorf(`models: validator failed for field "Account.otp": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.EmailChange(); ok {
 		if err := account.EmailChangeValidator(v); err != nil {
-			return &ValidationError{Name: "email_change", err: fmt.Errorf("models: validator failed for field \"email_change\": %w", err)}
+			return &ValidationError{Name: "email_change", err: fmt.Errorf(`models: validator failed for field "Account.email_change": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.EmailChangeToken(); ok {
 		if err := account.EmailChangeTokenValidator(v); err != nil {
-			return &ValidationError{Name: "email_change_token", err: fmt.Errorf("models: validator failed for field \"email_change_token\": %w", err)}
+			return &ValidationError{Name: "email_change_token", err: fmt.Errorf(`models: validator failed for field "Account.email_change_token": %w`, err)}
 		}
 	}
 	return nil
@@ -1113,9 +1128,21 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	}
 	id, ok := auo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Account.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`models: missing "Account.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
+	if fields := auo.fields; len(fields) > 0 {
+		_spec.Node.Columns = make([]string, 0, len(fields))
+		_spec.Node.Columns = append(_spec.Node.Columns, account.FieldID)
+		for _, f := range fields {
+			if !account.ValidColumn(f) {
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("models: invalid field %q for query", f)}
+			}
+			if f != account.FieldID {
+				_spec.Node.Columns = append(_spec.Node.Columns, f)
+			}
+		}
+	}
 	if ps := auo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1346,8 +1373,8 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{account.Label}
-		} else if cerr, ok := isSQLConstraintError(err); ok {
-			err = cerr
+		} else if sqlgraph.IsConstraintError(err) {
+			err = &ConstraintError{err.Error(), err}
 		}
 		return nil, err
 	}

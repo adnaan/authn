@@ -20,9 +20,9 @@ type AccountDelete struct {
 	mutation *AccountMutation
 }
 
-// Where adds a new predicate to the AccountDelete builder.
+// Where appends a list predicates to the AccountDelete builder.
 func (ad *AccountDelete) Where(ps ...predicate.Account) *AccountDelete {
-	ad.mutation.predicates = append(ad.mutation.predicates, ps...)
+	ad.mutation.Where(ps...)
 	return ad
 }
 
@@ -46,6 +46,9 @@ func (ad *AccountDelete) Exec(ctx context.Context) (int, error) {
 			return affected, err
 		})
 		for i := len(ad.hooks) - 1; i >= 0; i-- {
+			if ad.hooks[i] == nil {
+				return 0, fmt.Errorf("models: uninitialized hook (forgotten import models/runtime?)")
+			}
 			mut = ad.hooks[i](mut)
 		}
 		if _, err := mut.Mutate(ctx, ad.mutation); err != nil {

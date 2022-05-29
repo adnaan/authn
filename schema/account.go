@@ -29,7 +29,7 @@ func (Account) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("provider").NotEmpty(),
 		field.String("email").Unique().NotEmpty(),
-		field.String("password").NotEmpty().Sensitive().MinLen(8),
+		field.String("password").NotEmpty().Sensitive().MinLen(6),
 		field.Bool("locked").Default(false),
 
 		field.Bool("confirmed").Default(false).Optional(),

@@ -32,9 +32,9 @@ func (*Session) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case session.FieldID, session.FieldData:
-			values[i] = &sql.NullString{}
+			values[i] = new(sql.NullString)
 		case session.FieldCreatedAt, session.FieldUpdatedAt, session.FieldExpiresAt:
-			values[i] = &sql.NullTime{}
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Session", columns[i])
 		}

@@ -93,6 +93,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
+		ctx:     ctx,
 		config:  cfg,
 		Account: NewAccountClient(cfg),
 		Session: NewSessionClient(cfg),
@@ -195,7 +196,9 @@ func (c *AccountClient) DeleteOneID(id uuid.UUID) *AccountDeleteOne {
 
 // Query returns a query builder for Account.
 func (c *AccountClient) Query() *AccountQuery {
-	return &AccountQuery{config: c.config}
+	return &AccountQuery{
+		config: c.config,
+	}
 }
 
 // Get returns a Account entity by its id.
@@ -283,7 +286,9 @@ func (c *SessionClient) DeleteOneID(id string) *SessionDeleteOne {
 
 // Query returns a query builder for Session.
 func (c *SessionClient) Query() *SessionQuery {
-	return &SessionQuery{config: c.config}
+	return &SessionQuery{
+		config: c.config,
+	}
 }
 
 // Get returns a Session entity by its id.
